@@ -1,5 +1,5 @@
 defmodule LibLatLon.Provider do
-@moduledoc """
+  @moduledoc """
   The default behaviour for all the geo providers.
   """
 
@@ -7,5 +7,5 @@ defmodule LibLatLon.Provider do
   @callback name() :: binary()
 
   @doc "Performs a reverse lookup by latitude and longitude"
-  @callback lookup(LibLatLon.Coords.t) :: LibLatLon.Info.t
+  @callback lookup(LibLatLon.Coords.t()) :: LibLatLon.Info.t()
 end

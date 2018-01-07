@@ -5,4 +5,3 @@ defmodule LibLatLon.Coords do
 
   defstruct @fields
 end
-

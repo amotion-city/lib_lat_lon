@@ -19,20 +19,21 @@ defmodule LibLatLon.Providers.OpenStreetMap do
   #           accept-language={{ language }}&lat={{ latitude }}&
   #           lon={{ longitude }}&zoom={{ zoom }}&addressdetails=1"
   def lookup(%LibLatLon.Coords{lat: lat, lon: lon}, opts \\ @defaults) do
-    query = 
+    query =
       opts
       |> Map.merge(%{lat: lat, lon: lon})
       |> Enum.map(fn {k, v} -> "#{k}=#{v}" end)
       |> Enum.join("&")
-    
+
     case HTTPoison.get(Enum.join([@reverse, query], "?")) do
       {:ok, %HTTPoison.Response{status_code: 200, body: body}} ->
         Jason.decode!(body)
+
       {:ok, %HTTPoison.Response{status_code: 404}} ->
-        IO.puts "Not found :("
+        IO.puts("Not found :(")
+
       {:error, %HTTPoison.Error{reason: reason}} ->
-        IO.inspect reason
+        IO.inspect(reason)
     end
   end
-    
-  end
+end
