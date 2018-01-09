@@ -9,15 +9,15 @@ defmodule LibLatLon.Providers.OpenStreetMap do
   @search Enum.join([@server_url, "search"], "/")
   @reverse Enum.join([@server_url, "reverse"], "/")
 
-  @defaults %{ "accept-language": "en" }
-  @reverse_defaults %{ format: :json, zoom: 16, addressdetails: 1 }
-  @search_defaults %{ format: :json, polygon_geojson: 1, viewbox: "" }
+  @defaults %{"accept-language": "en"}
+  @reverse_defaults %{format: :json, zoom: 16, addressdetails: 1}
+  @search_defaults %{format: :json, polygon_geojson: 1, viewbox: ""}
 
   def name(), do: "Open Street Map"
 
   def lookup(input, opts \\ @defaults)
 
-    # "https://nominatim.openstreetmap.org/reverse?format=json&
+  # "https://nominatim.openstreetmap.org/reverse?format=json&
   #           accept-language={{ language }}&lat={{ latitude }}&
   #           lon={{ longitude }}&zoom={{ zoom }}&addressdetails=1"
   def lookup(%LibLatLon.Coords{lat: lat, lon: lon}, opts) do
@@ -48,10 +48,11 @@ defmodule LibLatLon.Providers.OpenStreetMap do
   ##############################################################################
 
   defp do_lookup(query) do
+    # FIXME BETTER ERROR HANDLING
     with {:ok, %HTTPoison.Response{status_code: 200, body: body}} <- HTTPoison.get(query),
          {:ok, result} <- Jason.decode(body) do
       result
-    else # FIXME BETTER ERROR HANDLING
+    else
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         {:error, :not_found}
 

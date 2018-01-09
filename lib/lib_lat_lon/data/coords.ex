@@ -1,10 +1,16 @@
 defmodule LibLatLon.Coords do
   alias LibLatLon.Coords
 
-  @type t :: %__MODULE__{lat: float(), lon: float(), alt: float()}
+  @type t :: %__MODULE__{
+    lat: number(),
+    lon: number(),
+    alt: number(),
+    direction: number(),
+    magnetic?: true | false
+  }
 
-  @image_start_marker   0xffd8
-  @fields ~w|lat lon alt|a
+  @image_start_marker 0xFFD8
+  @fields ~w|lat lon alt direction magnetic?|a
 
   defstruct @fields
 
@@ -13,40 +19,56 @@ defmodule LibLatLon.Coords do
   `[degree,minute,second,semisphere]` representations.
   """
   @type dms :: {number(), number(), number()}
-  @type dms_a :: [number()]
-  @type dms_ss :: {dms(), any()}
+  @type dms_array :: [number()]
+  @type dms_ss :: {dms() | dms_array(), binary() | nil}
 
-  @spec borrow(dms(), binary() | nil) :: float()
+  @spec borrow(dms(), any()) :: number()
   def borrow({d, m, s}, ss), do: borrow(d, m, s, ss)
 
-  @spec borrow(dms_a(), binary() | nil) :: float()
+  @spec borrow(dms_array(), any()) :: number()
   def borrow([d, m, s], ss), do: borrow(d, m, s, ss)
 
-  @spec borrow(dms_ss()) :: float()
-  def borrow({{d, m, s}, ss}), do: borrow(d, m, s, ss)
-
-  @spec borrow({[number()], number()}) :: float()
-  def borrow({[d, m, s], ss}), do: borrow(d, m, s, ss)
-
-  @spec borrow(number(), number(), number(), binary() | nil) :: float()
+  @spec borrow(number(), number(), number(), any()) :: number()
   def borrow(d, m, s, ss \\ nil)
   def borrow(d, m, s, "S"), do: -do_borrow(d, m, s)
   def borrow(d, m, s, "W"), do: -do_borrow(d, m, s)
   def borrow(d, m, s, -1), do: -do_borrow(d, m, s)
   def borrow(d, m, s, _), do: do_borrow(d, m, s)
 
-  @spec borrow(binary()) :: float() | LibLatLon.Coords.t
-  for id <- 1..2, im <- 1..2, is <- 1..2 do
+  @spec borrow(
+          {number(), number()}
+          | {dms_ss(), dms_ss()}
+          | dms_ss()
+          | [number()]
+          | map()
+          | binary()
+          | Keyword.t()
+          | %Exexif.Data.Gps{}
+          | number()
+        ) :: LibLatLon.Coords.t() | number()
+  def borrow(lat_or_lon) when is_number(lat_or_lon), do: lat_or_lon
+
+  def borrow({{d, m, s}, ss}), do: borrow(d, m, s, ss)
+  def borrow({[d, m, s], ss}), do: borrow(d, m, s, ss)
+
+  for id <- 1..2,
+      im <- 1..2,
+      is <- 1..2 do
     def borrow(<<
-        d :: binary-size(unquote(id)), "°",
-        m :: binary-size(unquote(im)), "´",
-        s :: binary-size(unquote(is)), "˝",
-        ss :: binary-size(1)>>) do
+          d::binary-size(unquote(id)),
+          "°",
+          m::binary-size(unquote(im)),
+          "´",
+          s::binary-size(unquote(is)),
+          "˝",
+          ss::binary-size(1)
+        >>) do
       [d, m, s]
       |> Enum.map(fn v -> with {v, ""} <- Float.parse(v), do: v end)
       |> borrow(ss)
     end
   end
+
   @doc """
       iex> LibLatLon.Coords.borrow("41°23´16˝N,2°11´50˝E")
       %LibLatLon.Coords{lat: 41.38777777777778, lon: 2.197222222222222}
@@ -56,30 +78,38 @@ defmodule LibLatLon.Coords do
   """
   def borrow(dmss) when is_binary(dmss) do
     dmss
-    |> String.split(",")
+    |> String.split([",", ";", " "])
     |> Enum.map(&borrow/1)
     |> borrow()
   end
 
-  @spec borrow({number(), number()} | [number()] | map() | Keyword.t | float()) :: LibLatLon.Coords.t
-  def borrow(lat_or_lon) when is_number(lat_or_lon), do: lat_or_lon
   def borrow([lat, lon]), do: borrow({lat, lon})
   def borrow(%{lat: lat, lon: lon}), do: borrow({lat, lon})
   def borrow(%{latitude: lat, longitude: lon}), do: borrow({lat, lon})
   def borrow(latitude: lat, longitude: lon), do: borrow({lat, lon})
-  def borrow(%Exexif.Data.Gps{
-      gps_altitude: alt,
-      gps_latitude: lat,
-      gps_latitude_ref: lat_ref,
-      gps_longitude: lon,
-      gps_longitude_ref: lon_ref}) do
-    with coords <- borrow({{lat, lat_ref}, {lon, lon_ref}}),
-      do: %LibLatLon.Coords{coords | alt: alt}
-  end
-  def borrow({lat, lon}),
-    do: %LibLatLon.Coords{lat: borrow(lat), lon: borrow(lon)}
 
-  @spec do_borrow(number(), number(), number()) :: float()
+  def borrow(%Exexif.Data.Gps{
+        gps_altitude: alt,
+        gps_altitude_ref: alt_ref,
+        gps_latitude: lat,
+        gps_latitude_ref: lat_ref,
+        gps_longitude: lon,
+        gps_longitude_ref: lon_ref,
+        gps_img_direction: dir,
+        gps_img_direction_ref: dir_ref
+      }) do
+    with %LibLatLon.Coords{} = coords <- borrow({{lat, lat_ref}, {lon, lon_ref}}) do
+      %LibLatLon.Coords{coords |
+        alt: (if alt_ref == 0, do: alt, else: alt * alt_ref),
+        direction: dir,
+        magnetic?: dir_ref == "M"
+      }
+    end
+  end
+
+  def borrow({lat, lon}), do: %LibLatLon.Coords{lat: borrow(lat), lon: borrow(lon)}
+
+  @spec do_borrow(number(), number(), number()) :: number()
   defp do_borrow(d, m, s), do: d + m / 60 + s / 3600
 
   ##############################################################################
@@ -95,15 +125,13 @@ defmodule LibLatLon.Coords do
     |> Enum.map(&do_lend/1)
     |> List.to_tuple()
   end
+
   @spec lend({number(), number()}) :: {dms_ss(), dms_ss()}
-  def lend({dms1, dms2}) when is_number(dms1) and is_number(dms2),
-    do: lend(dms1, dms2)
+  def lend({dms1, dms2}) when is_number(dms1) and is_number(dms2), do: lend(dms1, dms2)
   @spec lend([number()]) :: {dms_ss(), dms_ss()}
-  def lend([dms1, dms2]) when is_number(dms1) and is_number(dms2),
-    do: lend(dms1, dms2)
-  @spec lend(Coords.t) :: {dms_ss(), dms_ss()}
-  def lend(%Coords{lat: dms1, lon: dms2}),
-    do: lend(dms1, dms2)
+  def lend([dms1, dms2]) when is_number(dms1) and is_number(dms2), do: lend(dms1, dms2)
+  @spec lend(Coords.t()) :: {dms_ss(), dms_ss()}
+  def lend(%Coords{lat: dms1, lon: dms2}), do: lend(dms1, dms2)
 
   @spec do_lend({number(), 0 | 1}) :: dms_ss()
   def do_lend({dms, idx}) when is_number(dms) do
@@ -112,13 +140,15 @@ defmodule LibLatLon.Coords do
     d = abs |> Float.floor() |> Kernel.round()
     m = abs |> Kernel.-(d) |> Kernel.*(60.0) |> Float.floor() |> Kernel.round()
     s = abs |> Kernel.-(d) |> Kernel.-(m / 60.0) |> Kernel.*(3600.0) |> Float.round(8)
+
     ss =
       case {ss, idx} do
-      {true, 0} -> "N"
-      {true, _} -> "E"
-      {_, 0} -> "S"
-      {_, _} -> "W"
+        {true, 0} -> "N"
+        {true, _} -> "E"
+        {_, 0} -> "S"
+        {_, _} -> "W"
       end
+
     {{d, m, s}, ss}
   end
 
@@ -135,9 +165,8 @@ defmodule LibLatLon.Coords do
       iex> LibLatLon.Coords.coordinate("test/inputs/unknown.jpg")
       {:error, :illegal_source_file}
   """
-  def coordinate(<<@image_start_marker :: 16, _ :: binary>> = buffer),
-    do: with {:ok, info} <- Exexif.exif_from_jpeg_buffer(buffer),
-      do: coordinate(info)
+  def coordinate(<<@image_start_marker::16, _::binary>> = buffer),
+    do: with({:ok, info} <- Exexif.exif_from_jpeg_buffer(buffer), do: coordinate(info))
 
   def coordinate(file) when is_binary(file) do
     with true <- File.exists?(file) && !File.dir?(file),
@@ -148,7 +177,6 @@ defmodule LibLatLon.Coords do
       whatever -> whatever
     end
   end
-
 
   def coordinate(nil), do: {:error, :no_gps_info}
 
@@ -178,7 +206,7 @@ defmodule LibLatLon.Coords do
 
     def inspect(%{lat: lat, lon: lon}, opts) do
       inner = [lat: lat, lon: lon, fancy: to_string(%LibLatLon.Coords{lat: lat, lon: lon})]
-      concat ["#Coord<", to_doc(inner, opts), ">"]
+      concat(["#Coord<", to_doc(inner, opts), ">"])
     end
   end
 end
