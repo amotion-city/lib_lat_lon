@@ -45,12 +45,56 @@ defmodule LibLatLon.Providers.OpenStreetMap do
     |> do_lookup()
   end
 
+  def guess_lookup(any, opts \\ @defaults) do
+    lookup_arg =
+      case LibLatLon.Coords.coordinate(any) do
+        {:ok, %LibLatLon.Coords{} = result} -> result
+        _ -> inspect(any)
+      end
+    lookup(lookup_arg, opts)
+  end
+
   ##############################################################################
+
+  # %{
+  #   "address" => %{
+  #     "city" => "Barcelona",
+  #     "city_district" => "Sant Martí",
+  #     "country" => "Spain",
+  #     "country_code" => "es",
+  #     "county" => "BCN",
+  #     "postcode" => "08020",
+  #     "road" => "Avinguda del Litoral",
+  #     "state" => "Catalonia",
+  #     "suburb" => "la Vila Olímpica del Poblenou"
+  #   },
+  #   "boundingbox" => ["41.3876663", "41.3917431", "2.196602", "2.2031084"],
+  #   "display_name" => "Avinguda del Litoral, la Vila Olímpica del Poblenou, Sant Martí, Barcelona, BCN, Catalonia, 08020, Spain",
+  #   "lat" => "41.3899932",
+  #   "licence" => "Data © OpenStreetMap contributors, ODbL 1.0. http://www.openstreetmap.org/copyright",
+  #   "lon" => "2.2000054",
+  #   "osm_id" => "47123759",
+  #   "osm_type" => "way",
+  #   "place_id" => "82181109"
+  # }
+  defp normalize(%{} = input) do
+    output = %{
+      details: input["address"],
+      bounds: input["boundingbox"],
+      display: input["display_name"],
+      lat: input["lat"],
+      lon: input["lon"],
+      meta: Map.take(input, ~w|osm_type osm_id place_id licence|)
+    }
+    {:ok, output}
+  end
 
   defp do_lookup(query) do
     # FIXME BETTER ERROR HANDLING
     with {:ok, %HTTPoison.Response{status_code: 200, body: body}} <- HTTPoison.get(query),
-         {:ok, result} <- Jason.decode(body) do
+         {:ok, result} <- Jason.decode(body),
+         {:ok, result} <- normalize(result),
+         {:ok, result} <- LibLatLon.Info.from_map(result) do
       result
     else
       {:ok, %HTTPoison.Response{status_code: 404}} ->
@@ -59,8 +103,11 @@ defmodule LibLatLon.Providers.OpenStreetMap do
       {:error, %HTTPoison.Error{reason: reason}} ->
         {:error, reason}
 
-      {:error, jason_error} ->
-        {:error, jason_error}
+      {:error, error} ->
+        {:error, error}
+
+      :error ->
+        {:error, :unknown}
     end
   end
 end

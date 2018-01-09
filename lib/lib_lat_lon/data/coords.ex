@@ -47,6 +47,7 @@ defmodule LibLatLon.Coords do
           | number()
         ) :: LibLatLon.Coords.t() | number()
   def borrow(lat_or_lon) when is_number(lat_or_lon), do: lat_or_lon
+  def borrow([lat_or_lon]) when is_number(lat_or_lon), do: lat_or_lon
 
   def borrow({{d, m, s}, ss}), do: borrow(d, m, s, ss)
   def borrow({[d, m, s], ss}), do: borrow(d, m, s, ss)
@@ -79,6 +80,7 @@ defmodule LibLatLon.Coords do
   def borrow(dmss) when is_binary(dmss) do
     dmss
     |> String.split([",", ";", " "])
+    |> Enum.map(&LibLatLon.Utils.safe_float/1)
     |> Enum.map(&borrow/1)
     |> borrow()
   end
