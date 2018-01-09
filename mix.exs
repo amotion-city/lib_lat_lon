@@ -23,7 +23,8 @@ defmodule LibLatLon.MixProject do
   defp deps do
     [
       {:httpoison, "~> 1.0"},
-      {:jason, "~> 1.0-rc1"}
+      {:jason, "~> 1.0-rc1"},
+      {:exexif, "~> 0.0"}
 
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
     ]

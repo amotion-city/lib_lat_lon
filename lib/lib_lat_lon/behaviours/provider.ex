@@ -6,6 +6,9 @@ defmodule LibLatLon.Provider do
   @doc "Returns a name of this provider to display"
   @callback name() :: binary()
 
-  @doc "Performs a reverse lookup by latitude and longitude"
-  @callback lookup(LibLatLon.Coords.t()) :: LibLatLon.Info.t()
+  @doc """
+  Performs either a normal lookup by any string or
+    a reverse lookup by latitude and longitude
+  """
+  @callback lookup(LibLatLon.Coords.t() | binary()) :: LibLatLon.Info.t()
 end

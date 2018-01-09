@@ -3,6 +3,8 @@ defmodule LibLatLon.Providers.OpenStreetMap do
     `OpenStreetMap` provider implementation.
   """
 
+  @behaviour LibLatLon.Provider
+
   @server_url "https://nominatim.openstreetmap.org"
   @search Enum.join([@server_url, "search"], "/")
   @reverse Enum.join([@server_url, "reverse"], "/")
@@ -42,6 +44,8 @@ defmodule LibLatLon.Providers.OpenStreetMap do
     |> Enum.join("?")
     |> do_lookup()
   end
+
+  ##############################################################################
 
   defp do_lookup(query) do
     with {:ok, %HTTPoison.Response{status_code: 200, body: body}} <- HTTPoison.get(query),
