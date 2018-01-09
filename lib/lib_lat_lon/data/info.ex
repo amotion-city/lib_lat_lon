@@ -43,7 +43,8 @@ defmodule LibLatLon.Info do
       {:ok, %__MODULE__{
               bounds: bounds,
               coords: coords,
-              details: map.details, meta: map.meta,
+              details: map.details,
+              meta: map.meta,
               address: map.display
             }}
     end

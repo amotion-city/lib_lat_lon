@@ -79,12 +79,15 @@ defmodule LibLatLon.Providers.OpenStreetMap do
   # }
   defp normalize(%{} = input) do
     output = %{
-      details: input["address"],
+      details: LibLatLon.Utils.keywordize(input["address"]),
       bounds: input["boundingbox"],
       display: input["display_name"],
       lat: input["lat"],
       lon: input["lon"],
-      meta: Map.take(input, ~w|osm_type osm_id place_id licence|)
+      meta:
+        input
+        |> Map.take(~w|osm_type osm_id place_id licence|)
+        |> LibLatLon.Utils.keywordize()
     }
     {:ok, output}
   end
