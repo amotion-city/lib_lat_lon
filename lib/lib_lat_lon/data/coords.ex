@@ -64,10 +64,13 @@ defmodule LibLatLon.Coords do
       iex> LibLatLon.Coords.borrow("41°23´16˝N,2°11´50˝E")
       %LibLatLon.Coords{lat: 41.38777777777778, lon: 2.197222222222222}
 
+      iex> LibLatLon.Coords.borrow("41°23´16.222˝N,2°11´50.333˝E")
+      %LibLatLon.Coords{lat: 41.387839444444445, lon: 2.197314722222222}
+
       iex> LibLatLon.Coords.borrow({{{41, 23, 16.0}, "N"}, {{2, 11, 50.0}, "E"}})
       %LibLatLon.Coords{lat: 41.38777777777778, lon: 2.197222222222222}
   """
-  for id <- 1..2, im <- 1..2, is <- 1..2 do
+  for id <- 1..3, im <- 1..2, is <- 1..12 do
     def borrow(<<
           d::binary-size(unquote(id)),
           "°",
@@ -82,7 +85,7 @@ defmodule LibLatLon.Coords do
       |> borrow(ss)
     end
 
-    for jd <- 1..2, jm <- 1..2, js <- 1..2 do
+    for jd <- 1..3, jm <- 1..2, js <- 1..12 do
       def borrow(<<
             d1::binary-size(unquote(id)),
             "°",
