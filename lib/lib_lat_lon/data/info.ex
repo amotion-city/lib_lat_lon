@@ -49,4 +49,19 @@ defmodule LibLatLon.Info do
             }}
     end
   end
+  def from_map(list) when is_list(list), do: {:ok, from_map!(list)}
+
+  def from_map!([]), do: []
+  def from_map!(%{} = input),
+    do: with {:ok, result} <- from_map(input), do: result
+  def from_map!([%{} = h | t]), do: [from_map!(h) | from_map!(t)]
+
+  def format(%LibLatLon.Info{details: %{} = content}, format) when is_binary(format) do
+    ~r|%{(.*?)}|
+    |> Regex.replace(format, fn
+      _, term ->
+        content[String.to_atom(term)]
+    end)
+    |> String.replace(~r|(?:\p{P}[\p{M}\p{Z}\n\r]*)+(\p{P})|u, "\\1")
+  end
 end

@@ -37,6 +37,7 @@ defmodule LibLatLon.Coords do
 
   @spec borrow(
           {number(), number()}
+          | nil
           | {dms_ss(), dms_ss()}
           | dms_ss()
           | [number()]
@@ -45,16 +46,28 @@ defmodule LibLatLon.Coords do
           | Keyword.t()
           | %Exexif.Data.Gps{}
           | number()
-        ) :: LibLatLon.Coords.t() | number()
+        ) :: LibLatLon.Coords.t() | number() | nil
+
+  def borrow(nil), do: nil
+  def borrow([nil, _]), do: nil
+  def borrow([_, nil]), do: nil
+  def borrow({nil, _}), do: nil
+  def borrow({_, nil}), do: nil
+
   def borrow(lat_or_lon) when is_number(lat_or_lon), do: lat_or_lon
   def borrow([lat_or_lon]) when is_number(lat_or_lon), do: lat_or_lon
 
   def borrow({{d, m, s}, ss}), do: borrow(d, m, s, ss)
   def borrow({[d, m, s], ss}), do: borrow(d, m, s, ss)
 
-  for id <- 1..2,
-      im <- 1..2,
-      is <- 1..2 do
+  @doc """
+      iex> LibLatLon.Coords.borrow("41°23´16˝N,2°11´50˝E")
+      %LibLatLon.Coords{lat: 41.38777777777778, lon: 2.197222222222222}
+
+      iex> LibLatLon.Coords.borrow({{{41, 23, 16.0}, "N"}, {{2, 11, 50.0}, "E"}})
+      %LibLatLon.Coords{lat: 41.38777777777778, lon: 2.197222222222222}
+  """
+  for id <- 1..2, im <- 1..2, is <- 1..2 do
     def borrow(<<
           d::binary-size(unquote(id)),
           "°",
@@ -68,19 +81,37 @@ defmodule LibLatLon.Coords do
       |> Enum.map(fn v -> with {v, ""} <- Float.parse(v), do: v end)
       |> borrow(ss)
     end
+
+    for jd <- 1..2, jm <- 1..2, js <- 1..2 do
+      def borrow(<<
+            d1::binary-size(unquote(id)),
+            "°",
+            m1::binary-size(unquote(im)),
+            "´",
+            s1::binary-size(unquote(is)),
+            "˝",
+            ss1::binary-size(1),
+            _ :: binary-size(1),
+            d2::binary-size(unquote(jd)),
+            "°",
+            m2::binary-size(unquote(jm)),
+            "´",
+            s2::binary-size(unquote(js)),
+            "˝",
+            ss2::binary-size(1)
+          >>) do
+        [dms1, dms2] =
+          Enum.map([[d1, m1, s1], [d2, m2, s2]],
+            &Enum.map(&1, fn v -> with {v, ""} <- Float.parse(v), do: v end))
+        borrow({{dms1, ss1}, {dms2, ss2}})
+      end
+    end
   end
 
-  @doc """
-      iex> LibLatLon.Coords.borrow("41°23´16˝N,2°11´50˝E")
-      %LibLatLon.Coords{lat: 41.38777777777778, lon: 2.197222222222222}
-
-      iex> LibLatLon.Coords.borrow({{{41, 23, 16.0}, "N"}, {{2, 11, 50.0}, "E"}})
-      %LibLatLon.Coords{lat: 41.38777777777778, lon: 2.197222222222222}
-  """
   def borrow(dmss) when is_binary(dmss) do
     dmss
     |> String.split([",", ";", " "])
-    |> Enum.map(&LibLatLon.Utils.safe_float/1)
+    |> Enum.map(&LibLatLon.Utils.strict_float/1)
     |> Enum.map(&borrow/1)
     |> borrow()
   end
@@ -189,7 +220,7 @@ defmodule LibLatLon.Coords do
   def coordinate!(whatever) do
     case coordinate(whatever) do
       {:ok, result} -> result
-      {:error, reason} -> raise ArgumentError, reason: inspect(reason)
+      {:error, reason} -> raise ArgumentError, message: "Reason: #{inspect(reason)}"
     end
   end
 

@@ -3,23 +3,26 @@ defmodule LibLatLon do
   Documentation for LibLatLon.
   """
 
+  @default_provider Application.get_env(
+    :lib_lat_lon, :provider, LibLatLon.Providers.OpenStreetMap)
+
   @doc """
   Hello world.
 
   ## Examples
 
-      iex> LibLatLon.hello
-      :world
+  iiex> LibLatLon.lookup()
+  :world
 
   """
-  def hello do
-    :world
+  def lookup(value, provider \\ @default_provider, opts \\ %{}) do
+    provider.guess_lookup(value, opts)
   end
 
-  defprotocol LibLatLon.Coord do
-    @doc "Produces `LibLatLon.Coords` from any source given"
-    def as_latlon(data)
-  end
+  # defprotocol LibLatLon.Coord do
+  #   @doc "Produces `LibLatLon.Coords` from any source given"
+  #   def as_latlon(data)
+  # end
 
   defmodule Utils do
     @spec safe_float(binary() | number()) :: float()
@@ -33,7 +36,19 @@ defmodule LibLatLon do
       end
     end
 
-    @spec keywordize(map()) :: map()
+    @spec strict_float(binary() | number()) :: float() | nil
+    def strict_float(v) when is_float(v), do: v
+    def strict_float(v) when is_integer(v), do: v * 1.0
+    def strict_float(v) when is_binary(v) do
+      case Float.parse(v) do
+        {float, ""} -> float
+        {_float, _non_empty} -> nil
+        :error -> nil
+      end
+    end
+
+    @spec keywordize(map() | nil) :: map()
+    def keywordize(nil), do: nil
     def keywordize(%{} = map) do
       Enum.map(map, fn
         {k, v} when is_binary(k) -> {String.to_atom(k), v}

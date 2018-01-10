@@ -86,11 +86,17 @@ defmodule LibLatLon.Providers.OpenStreetMap do
       lon: input["lon"],
       meta:
         input
-        |> Map.take(~w|osm_type osm_id place_id licence|)
+        |> Map.take(~w|type importance osm_type osm_id place_id licence|)
         |> LibLatLon.Utils.keywordize()
     }
     {:ok, output}
   end
+  defp normalize(list) when is_list(list), do: {:ok, normalize!(list)}
+
+  defp normalize!([]), do: []
+  defp normalize!(%{} = input),
+    do: with {:ok, result} <- normalize(input), do: result
+  defp normalize!([%{} = h | t]), do: [normalize!(h) | normalize!(t)]
 
   defp do_lookup(query) do
     # FIXME BETTER ERROR HANDLING
