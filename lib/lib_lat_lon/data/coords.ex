@@ -9,6 +9,8 @@ defmodule LibLatLon.Coords do
     magnetic?: true | false
   }
 
+  @decimal_precision Application.get_env(:lib_lat_lon, :decimal_precision, 12)
+
   @image_start_marker 0xFFD8
   @fields ~w|lat lon alt direction magnetic?|a
 
@@ -70,7 +72,7 @@ defmodule LibLatLon.Coords do
       iex> LibLatLon.Coords.borrow({{{41, 23, 16.0}, "N"}, {{2, 11, 50.0}, "E"}})
       %LibLatLon.Coords{lat: 41.38777777777778, lon: 2.197222222222222}
   """
-  for id <- 1..3, im <- 1..2, is <- 1..12 do
+  for id <- 1..3, im <- 1..2, is <- 1..@decimal_precision do
     def borrow(<<
           d::binary-size(unquote(id)),
           "°",
@@ -85,7 +87,7 @@ defmodule LibLatLon.Coords do
       |> borrow(ss)
     end
 
-    for jd <- 1..3, jm <- 1..2, js <- 1..12 do
+    for jd <- 1..3, jm <- 1..2, js <- 1..@decimal_precision do
       def borrow(<<
             d1::binary-size(unquote(id)),
             "°",
@@ -201,6 +203,7 @@ defmodule LibLatLon.Coords do
       iex> LibLatLon.Coords.coordinate("test/inputs/unknown.jpg")
       {:error, :illegal_source_file}
   """
+  @spec coordinate(nil | binary() | %{} | any()) :: {:ok, LibLatLon.Coords.t} | {:error, atom()}
   def coordinate(<<@image_start_marker::16, _::binary>> = buffer),
     do: with({:ok, info} <- Exexif.exif_from_jpeg_buffer(buffer), do: coordinate(info))
 

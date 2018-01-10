@@ -16,13 +16,19 @@ defmodule LibLatLon do
 
   """
   def lookup(value, provider \\ @default_provider, opts \\ %{}) do
-    provider.guess_lookup(value, opts)
+    guess_lookup(provider, value, opts)
   end
 
-  # defprotocol LibLatLon.Coord do
-  #   @doc "Produces `LibLatLon.Coords` from any source given"
-  #   def as_latlon(data)
-  # end
+  defp guess_lookup(provider, any, opts) do
+    lookup_arg =
+      case LibLatLon.Coords.coordinate(any) do
+        {:ok, %LibLatLon.Coords{} = result} -> result
+        _ -> inspect(any)
+      end
+    provider.lookup(lookup_arg, opts)
+  end
+
+  ##############################################################################
 
   defmodule Utils do
     @spec safe_float(binary() | number()) :: float()
