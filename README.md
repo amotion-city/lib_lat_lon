@@ -1,8 +1,6 @@
 # LibLatLon
 
-**![{:ok, 📍}](/stuff/images/logo.png?raw=true) handy library for managing geo coordinates**
-
-* includes _direct/reverse geocoding_ features
+![{:ok, 📍}](/stuff/images/logo.png?raw=true) handy library for managing geo coordinates, that includes _direct/reverse geocoding_ features
 
 ## Installation
 
