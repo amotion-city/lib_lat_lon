@@ -28,12 +28,12 @@ defmodule LibLatLon.Coords do
   `EXIF` information from images.)
   """
   @type t :: %__MODULE__{
-    lat: number(),
-    lon: number(),
-    alt: number(),
-    direction: number(),
-    magnetic?: true | false
-  }
+          lat: number(),
+          lon: number(),
+          alt: number(),
+          direction: number(),
+          magnetic?: true | false
+        }
 
   @decimal_precision Application.get_env(:lib_lat_lon, :decimal_precision, 9)
 
@@ -101,8 +101,10 @@ defmodule LibLatLon.Coords do
           | map()
           | binary()
           | Keyword.t()
-          | Exexif.Data.Gps.t{}
-          | number()
+          | Exexif.Data.Gps.t(
+              {}
+              | number()
+            )
         ) :: LibLatLon.Coords.t() | number() | nil
 
   def borrow(nil), do: nil
@@ -117,7 +119,9 @@ defmodule LibLatLon.Coords do
   def borrow({{d, m, s}, ss}), do: borrow(d, m, s, ss)
   def borrow({[d, m, s], ss}), do: borrow(d, m, s, ss)
 
-  for id <- 1..2, im <- 1..2, is <- 1..@decimal_precision do
+  for id <- 1..2,
+      im <- 1..2,
+      is <- 1..@decimal_precision do
     def borrow(<<
           d::binary-size(unquote(id)),
           "°",
@@ -132,7 +136,9 @@ defmodule LibLatLon.Coords do
       |> borrow(ss)
     end
 
-    for jd <- 1..3, jm <- 1..2, js <- 1..@decimal_precision do
+    for jd <- 1..3,
+        jm <- 1..2,
+        js <- 1..@decimal_precision do
       def borrow(<<
             d1::binary-size(unquote(id)),
             "°",
@@ -141,7 +147,7 @@ defmodule LibLatLon.Coords do
             s1::binary-size(unquote(is)),
             "˝",
             ss1::binary-size(1),
-            _ :: binary-size(1),
+            _::binary-size(1),
             d2::binary-size(unquote(jd)),
             "°",
             m2::binary-size(unquote(jm)),
@@ -151,8 +157,11 @@ defmodule LibLatLon.Coords do
             ss2::binary-size(1)
           >>) do
         [dms1, dms2] =
-          Enum.map([[d1, m1, s1], [d2, m2, s2]],
-            &Enum.map(&1, fn v -> with {v, ""} <- Float.parse(v), do: v end))
+          Enum.map(
+            [[d1, m1, s1], [d2, m2, s2]],
+            &Enum.map(&1, fn v -> with {v, ""} <- Float.parse(v), do: v end)
+          )
+
         borrow({{dms1, ss1}, {dms2, ss2}})
       end
     end
@@ -183,10 +192,11 @@ defmodule LibLatLon.Coords do
         gps_img_direction_ref: dir_ref
       }) do
     with %LibLatLon.Coords{} = coords <- borrow({{lat, lat_ref}, {lon, lon_ref}}) do
-      %LibLatLon.Coords{coords |
-        alt: (if alt_ref == 0, do: alt, else: alt * alt_ref),
-        direction: dir,
-        magnetic?: dir_ref == "M"
+      %LibLatLon.Coords{
+        coords
+        | alt: if(alt_ref == 0, do: alt, else: alt * alt_ref),
+          direction: dir,
+          magnetic?: dir_ref == "M"
       }
     end
   end
@@ -231,7 +241,7 @@ defmodule LibLatLon.Coords do
       iex> LibLatLon.Coords.lend([41.38777777777778, 2.197222222222222])
       {{{41, 23, 16.0}, "N"}, {{2, 11, 50.0}, "E"}}
   """
-  @spec lend({number(), number()} | [number()] | LibLatLon.Coords.t) :: {dms_ss(), dms_ss()}
+  @spec lend({number(), number()} | [number()] | LibLatLon.Coords.t()) :: {dms_ss(), dms_ss()}
   def lend({dms1, dms2}) when is_number(dms1) and is_number(dms2), do: lend(dms1, dms2)
   def lend([dms1, dms2]) when is_number(dms1) and is_number(dms2), do: lend(dms1, dms2)
   def lend(%Coords{lat: dms1, lon: dms2}), do: lend(dms1, dms2)
@@ -265,7 +275,7 @@ defmodule LibLatLon.Coords do
       iex> LibLatLon.Coords.coordinate("test/inputs/unknown.jpg")
       {:error, :illegal_source_file}
   """
-  @spec coordinate(nil | binary() | %{} | any()) :: {:ok, LibLatLon.Coords.t} | {:error, atom()}
+  @spec coordinate(nil | binary() | %{} | any()) :: {:ok, LibLatLon.Coords.t()} | {:error, atom()}
   def coordinate(<<@image_start_marker::16, _::binary>> = buffer),
     do: with({:ok, info} <- Exexif.exif_from_jpeg_buffer(buffer), do: coordinate(info))
 
@@ -293,7 +303,7 @@ defmodule LibLatLon.Coords do
       iex> LibLatLon.Coords.coordinate!("test/inputs/1.jpg")
       #Coord<[lat: 41.37600333333334, lon: 2.1486783333333332, fancy: "41°22´33.612˝N,2°8´55.242˝E"]>
   """
-  @spec coordinate!(nil | binary() | %{} | any()) :: LibLatLon.Coords.t
+  @spec coordinate!(nil | binary() | %{} | any()) :: LibLatLon.Coords.t()
   def coordinate!(whatever) do
     case coordinate(whatever) do
       {:ok, result} -> result

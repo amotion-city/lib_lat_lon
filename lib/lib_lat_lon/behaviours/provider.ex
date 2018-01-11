@@ -17,5 +17,6 @@ defmodule LibLatLon.Provider do
   Performs either a normal lookup by any string or
     a reverse lookup by latitude and longitude
   """
-  @callback lookup(LibLatLon.Coords.t() | String.t, %{}) :: {:ok, LibLatLon.Info.t()} | {:error, any()}
+  @callback lookup(LibLatLon.Coords.t() | String.t(), %{}) ::
+              {:ok, LibLatLon.Info.t()} | {:error, any()}
 end

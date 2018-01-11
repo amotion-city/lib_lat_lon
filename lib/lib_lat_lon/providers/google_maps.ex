@@ -22,7 +22,8 @@ defmodule LibLatLon.Providers.GoogleMaps do
 
   Used internally by [`LibLatLon.lookup/1`].
   """
-  @spec lookup(LibLatLon.Coords.t | String.t, %{}) :: {:ok, LibLatLon.Info.t} | {:error, any()}
+  @spec lookup(LibLatLon.Coords.t() | String.t(), %{}) ::
+          {:ok, LibLatLon.Info.t()} | {:error, any()}
   def lookup(input, opts \\ defaults())
 
   # "https://maps.googleapis.com/maps/api/geocode/json?"
@@ -45,7 +46,6 @@ defmodule LibLatLon.Providers.GoogleMaps do
     |> Enum.join("?")
     |> do_lookup()
   end
-
 
   ##############################################################################
 
@@ -109,19 +109,20 @@ defmodule LibLatLon.Providers.GoogleMaps do
   #   "types" => ["premise"]
   # }
   defp normalize(%{"results" => input, "status" => "OK"}), do: normalize(input)
+
   defp normalize(%{} = input) do
     with %{"lat" => lat, "lng" => lon} <- input["geometry"]["location"],
-         %{"northeast" => %{"lat" => lat1, "lng" => lon1},
+         %{
+           "northeast" => %{"lat" => lat1, "lng" => lon1},
            "southwest" => %{"lat" => lat2, "lng" => lon2}
          } <- input["geometry"]["bounds"] || input["geometry"]["viewport"] do
-
       details =
-        for %{"long_name" => name,
-              "short_name" => _short_name,
-              "types" => types} <- input["address_components"],
+        for %{"long_name" => name, "short_name" => _short_name, "types" => types} <-
+              input["address_components"],
             type <- types,
             type != "political",
-          do: {type, name}, into: %{}
+            do: {type, name},
+            into: %{}
 
       output = %{
         details: LibLatLon.Utils.keywordize(details),
@@ -134,32 +135,34 @@ defmodule LibLatLon.Providers.GoogleMaps do
           |> Map.take(~w|types place_id licence|)
           |> LibLatLon.Utils.keywordize()
       }
+
       {:ok, output}
     else
       whatever -> {:error, whatever}
     end
   end
+
   defp normalize(list) when is_list(list), do: {:ok, normalize!(list)}
 
   defp normalize!([]), do: []
-  defp normalize!(%{} = input),
-    do: with {:ok, result} <- normalize(input), do: result
+  defp normalize!(%{} = input), do: with({:ok, result} <- normalize(input), do: result)
   defp normalize!([%{} = h | t]), do: [normalize!(h) | normalize!(t)]
 
   defp smart_filter([%{} = input]), do: {:ok, input}
+
   defp smart_filter(input) do
     output =
-      Enum.reduce(input, fn
-        %{meta: %{types: elem_types}} = elem,
-        %{meta: %{types: acc_types}} = acc ->
-          cond do
-            Enum.member?(acc_types, "street_address") -> acc
-            Enum.member?(elem_types, "street_address") -> elem
-            Enum.member?(acc_types, "premise") -> acc
-            Enum.member?(elem_types, "premise") -> elem
-            true -> acc
-          end
+      Enum.reduce(input, fn %{meta: %{types: elem_types}} = elem,
+                            %{meta: %{types: acc_types}} = acc ->
+        cond do
+          Enum.member?(acc_types, "street_address") -> acc
+          Enum.member?(elem_types, "street_address") -> elem
+          Enum.member?(acc_types, "premise") -> acc
+          Enum.member?(elem_types, "premise") -> elem
+          true -> acc
+        end
       end)
+
     {:ok, output}
   end
 

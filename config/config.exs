@@ -4,4 +4,4 @@ use Mix.Config
 config :porcelain, driver: Porcelain.Driver.Basic
 
 ### ENV-SPECIFIC
-if File.exists?("#{Mix.env}.exs"), do: import_config "#{Mix.env}.exs"
+if File.exists?("#{Mix.env()}.exs"), do: import_config("#{Mix.env()}.exs")

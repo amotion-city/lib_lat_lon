@@ -20,6 +20,6 @@ defmodule LibLatLon.Providers.Dummy do
 
   # # "https://nominatim.openstreetmap.org/search?format=json
   #             q=Barcelona+c%2Fde+Marina+16&polygon_geojson=1&viewbox=
-  def lookup(<<_address :: binary>>, _opts) do
+  def lookup(<<_address::binary>>, _opts) do
   end
 end

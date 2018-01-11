@@ -7,7 +7,10 @@ defmodule LibLatLon do
   """
 
   @default_provider Application.get_env(
-    :lib_lat_lon, :provider, LibLatLon.Providers.OpenStreetMap)
+                      :lib_lat_lon,
+                      :provider,
+                      LibLatLon.Providers.OpenStreetMap
+                    )
 
   @doc """
   Pass anything to lookup using default provider and with default options.
@@ -49,6 +52,7 @@ defmodule LibLatLon do
         {:ok, %LibLatLon.Coords{} = result} -> result
         _ -> inspect(any)
       end
+
     provider.lookup(lookup_arg, opts)
   end
 
@@ -60,6 +64,7 @@ defmodule LibLatLon do
     @spec safe_float(binary() | number()) :: float()
     def safe_float(v) when is_float(v), do: v
     def safe_float(v) when is_integer(v), do: v * 1.0
+
     def safe_float(v) when is_binary(v) do
       case Float.parse(v) do
         {float, ""} -> float
@@ -71,6 +76,7 @@ defmodule LibLatLon do
     @spec strict_float(binary() | number()) :: float() | nil
     def strict_float(v) when is_float(v), do: v
     def strict_float(v) when is_integer(v), do: v * 1.0
+
     def strict_float(v) when is_binary(v) do
       case Float.parse(v) do
         {float, ""} -> float
@@ -81,6 +87,7 @@ defmodule LibLatLon do
 
     @spec keywordize(map() | nil) :: map()
     def keywordize(nil), do: nil
+
     def keywordize(%{} = map) do
       Enum.map(map, fn
         {k, v} when is_binary(k) -> {String.to_atom(k), v}
@@ -89,6 +96,5 @@ defmodule LibLatLon do
       end)
       |> Enum.into(%{})
     end
-
   end
 end
