@@ -4,7 +4,7 @@ defmodule LibLatLon.Bounds do
   """
 
   @typedoc """
-  The `Bouds` struct has two fields:
+  The `Bouds` struct has two fields (`from` and `to`).
 
   * `from` denoting the _northeast_ boundary, and
   * `to` denoting the _southwest_ boundary.

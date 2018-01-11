@@ -4,8 +4,8 @@ defmodule LibLatLon.Provider do
 
   Implementations known:
 
-  * [`LibLatLon.Providers.OpenStreetMap`]
-  * [`LibLatLon.Providers.GoogleMaps`]
+  * `LibLatLon.Providers.OpenStreetMap`
+  * `LibLatLon.Providers.GoogleMaps`
 
   Contributions are _very welcome_.
   """

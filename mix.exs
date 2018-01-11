@@ -3,7 +3,7 @@ defmodule LibLatLon.MixProject do
 
   @app :lib_lat_lon
   @app_name "LibLatLon"
-  @version "0.3.0"
+  @version "0.3.1"
 
   def project do
     [
@@ -14,6 +14,7 @@ defmodule LibLatLon.MixProject do
       start_permanent: Mix.env() == :prod,
       description: description(),
       docs: docs(),
+      xref: [exclude: []],
       package: package(),
       deps: deps()
     ]
@@ -70,6 +71,20 @@ defmodule LibLatLon.MixProject do
       source_url: "https://github.com/amotion-city/#{@app}",
       extras: [
         "stuff/pages/intro.md"
+      ],
+      groups_for_modules: [
+        # LibLatLon,
+        # LibLatLon.Provider
+
+        "Data Representation": [
+          LibLatLon.Bounds,
+          LibLatLon.Coords,
+          LibLatLon.Info
+        ],
+        Providers: [
+          LibLatLon.Providers.GoogleMaps,
+          LibLatLon.Providers.OpenStreetMap
+        ]
       ]
     ]
   end

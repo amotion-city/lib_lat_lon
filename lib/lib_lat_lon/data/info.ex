@@ -48,10 +48,10 @@ defmodule LibLatLon.Info do
   """
 
   @typedoc """
-  Main type to store geo point in unified form. See:
+  Main type to store geo point in unified form.
 
-  * [`LibLatLon.Bounds.t`] for `bounds` field
-  * [`LibLatLon.Coords.t`] for `coords` key
+  * `LibLatLon.Bounds.t` for `bounds` field
+  * `LibLatLon.Coords.t` for `coords` key
 
   `address` is a string, representing the whole address in human-readable form.
 
@@ -93,14 +93,14 @@ defmodule LibLatLon.Info do
   def from_map(list) when is_list(list), do: {:ok, from_map!(list)}
 
   @doc """
-  The same as [`LibLatLon.Info.from_map/1`], but banged.
+  The same as `LibLatLon.Info.from_map/1`, but banged.
   """
   def from_map!([]), do: []
   def from_map!(%{} = input), do: with({:ok, result} <- from_map(input), do: result)
   def from_map!([%{} = h | t]), do: [from_map!(h) | from_map!(t)]
 
   @doc """
-  Formats the [`String.t`] representation of this struct according to
+  Formats the `String.t` representation of this struct according to
     the format given.
 
   Second parameter `format` might include `%{field}` inclusions

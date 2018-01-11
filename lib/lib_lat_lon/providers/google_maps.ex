@@ -18,9 +18,9 @@ defmodule LibLatLon.Providers.GoogleMaps do
 
   @doc """
   Implements a lookup for `GoogleMaps` provider. Returns either
-    `{:ok, %LibLatLon.Info{}}` or `{:error, reason} tuple.
+    `{:ok, %LibLatLon.Info{}}` or `{:error, reason}` tuple.
 
-  Used internally by [`LibLatLon.lookup/1`].
+  Used internally by `LibLatLon.lookup/1`.
   """
   @spec lookup(LibLatLon.Coords.t() | String.t(), %{}) ::
           {:ok, LibLatLon.Info.t()} | {:error, any()}

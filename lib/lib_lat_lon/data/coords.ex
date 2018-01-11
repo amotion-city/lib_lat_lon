@@ -3,11 +3,11 @@ defmodule LibLatLon.Coords do
   Main struct to be used as coordinates representation.
 
   One might cast nearly everything to `LibLatLon.Coord` with
-  [`LibLatLon.Coord.borrow/1`] and/or [`LibLatLon.Coord.borrow/2`].
+  `LibLatLon.Coord.borrow/1` and/or `LibLatLon.Coord.borrow/2`.
 
-  This struct implements both [`String.Chars`] and [`Inspect`] protocols.
+  This struct implements both `String.Chars` and `Inspect` protocols.
   The fancy string representation of any lat/lon pair might be get by
-  [`Kernel.to_string/1`]:
+  `Kernel.to_string/1`:
 
       iex> to_string(LibLatLon.Coords.borrow(lat: 41.38, lon: 2.19))
       "41°22´48.0˝N,2°11´24.0˝E"
@@ -22,7 +22,7 @@ defmodule LibLatLon.Coords do
   @typedoc """
   The type to store coordinates.
 
-  Mostly used fields are `lat` and `lon`, stored as [`Float.t`]. Also
+  Mostly used fields are `lat` and `lon`, stored as `Float.t`. Also
   might contain `altitude` and `direction` to calculate the latitude
   and langitude for the destination point (mostly used when dealing with
   `EXIF` information from images.)
@@ -52,7 +52,7 @@ defmodule LibLatLon.Coords do
   @doc """
   Converts `{{degree, minute, second}, semisphere}` or
     `{[degree, minute, second], semisphere}` representation into
-    [`LibLatLon.Coords`].
+    `LibLatLon.Coords`.
   """
   @spec borrow(dms(), any()) :: number()
   def borrow({d, m, s}, ss), do: borrow(d, m, s, ss)
@@ -62,7 +62,7 @@ defmodule LibLatLon.Coords do
 
   @doc """
   Converts `degree, minute, second, semisphere` representation into
-    [`LibLatLon.Coords`]. When the last parameter `semisphere` is not one of:
+    `LibLatLon.Coords`. When the last parameter `semisphere` is not one of:
     `"S"` or `"W"` or `-1` or `:south` or `west`, it is implicitly
     considered to be in `NE` semisphere.
   """
@@ -76,7 +76,7 @@ defmodule LibLatLon.Coords do
   def borrow(d, m, s, _), do: do_borrow(d, m, s)
 
   @doc """
-  Converts literally any input to [`LibLatLon.Coords`] instance.
+  Converts literally any input to `LibLatLon.Coords` instance.
 
   ## Examples
 
@@ -211,7 +211,7 @@ defmodule LibLatLon.Coords do
   @doc """
   Converts literally anything, provided as latitude _and_ longitude values
     to two tuples `{{degree, minute, second}, semisphere}`. Barely used
-    from the outside the package, since [`LibLatLon.Coords.t`] is obviously
+    from the outside the package, since `LibLatLon.Coords.t` is obviously
     better type to work with coordinates by all means.
 
   ## Examples
@@ -230,7 +230,7 @@ defmodule LibLatLon.Coords do
   @doc """
   Converts literally anything, provided as combined `latlon` value
     to two tuples `{{degree, minute, second}, semisphere}`. Barely used
-    from the outside the package, since [`LibLatLon.Coords.t`] is obviously
+    from the outside the package, since `LibLatLon.Coords.t` is obviously
     better type to work with coordinates by all means.
 
   ## Examples
@@ -296,7 +296,7 @@ defmodule LibLatLon.Coords do
   def coordinate(whatever), do: {:ok, Coords.borrow(whatever)}
 
   @doc """
-  Same as [`LibLatLon.Coords.coordinate/1`], but banged.
+  Same as `LibLatLon.Coords.coordinate/1`, but banged.
 
   ## Examples
 
