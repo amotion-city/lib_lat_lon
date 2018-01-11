@@ -2,7 +2,7 @@
 
 [![CircleCI](https://circleci.com/gh/amotion-city/lib_lat_lon.svg?style=svg)](https://circleci.com/gh/amotion-city/lib_lat_lon) 
 [![HexPM](https://img.shields.io/hexpm/v/lib_lat_lon.svg)](https://hex.pm/packages/lib_lat_lon) 
-[![Read the Docs](/stuff/images/docs-passing.svg"raw=true)](https://hexdocs.pm/lib_lat_lon) 
+[![Read the Docs](/stuff/images/docs-passing.svg?raw=true)](https://hexdocs.pm/lib_lat_lon) 
 handy library for managing geo coordinates, that includes _direct/reverse geocoding_ features
 
 ## Installation
