@@ -1,6 +1,8 @@
 # LibLatLon
 
-**{:ok, 📍}** |> handy library for managing geo coordinates that
+[![CircleCI](https://circleci.com/gh/amotion-city/lib_lat_lon.svg?style=svg)](https://circleci.com/gh/amotion-city/lib_lat_lon)
+
+**{:ok, 📍}** handy library for managing geo coordinates that
 includes _direct/reverse geocoding_ features.
 
 ## Installation
