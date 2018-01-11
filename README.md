@@ -1,6 +1,6 @@
 # LibLatLon
 
-**![{:ok, 📍}](/images/stuff/logo.png) handy library for managing geo coordinates**
+**![{:ok, 📍}](/images/stuff/logo.png?raw=true) handy library for managing geo coordinates**
 
 * includes _direct/reverse geocoding_ features
 
@@ -9,7 +9,7 @@
 ```elixir
 def deps do
   [
-    {:lib_lat_lon, "~> 0.1"}
+    {:lib_lat_lon, "~> 0.3"}
   ]
 end
 ```
