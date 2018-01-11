@@ -1,6 +1,6 @@
 defmodule LibLatLon.Bounds do
   @moduledoc """
-  Convenient storage for `Bounds`.
+  Convenient storage for geo bounds.
   """
 
   @typedoc """
@@ -28,6 +28,7 @@ defmodule LibLatLon.Bounds do
 
   defstruct @fields
 
+  @doc false
   def from_lat_lon([lat1, lat2, lon1, lon2]) do
     [lat1, lat2, lon1, lon2] = Enum.map([lat1, lat2, lon1, lon2], &LibLatLon.Utils.strict_float/1)
 
