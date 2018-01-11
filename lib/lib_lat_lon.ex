@@ -1,23 +1,47 @@
 defmodule LibLatLon do
   @moduledoc """
-  Documentation for LibLatLon.
+  This module is basically the only module consumers of this library
+    should be interested in.
+
+  There is a single function exported: [`LibLatLon.lookup/3`].
   """
 
   @default_provider Application.get_env(
     :lib_lat_lon, :provider, LibLatLon.Providers.OpenStreetMap)
 
   @doc """
-  Hello world.
+  Pass anything to lookup using default provider and with default options.
+  Pass a provider as the second argument to use a specific provider.
+  Pass options map like `%{language: "es"}` as a last parameter to
+    tune the provider’s response. _NB:_ options are provider-specific.
 
   ## Examples
 
-  iiex> LibLatLon.lookup()
-  :world
+      iex> LibLatLon.lookup(
+      ...>   {42, 3.14159265},
+      ...>   LibLatLon.Providers.Dummy,
+      ...>   %{extended: true}).details
+      %{
+        city: "Barcelona",
+        city_district: "Sant Martí",
+        country: "España",
+        country_code: "es",
+        county: "BCN",
+        postcode: "08020",
+        road: "Avinguda del Litoral",
+        state: "CAT",
+        suburb: "la Vila Olímpica del Poblenou"
+      }
 
   """
   def lookup(value, provider \\ @default_provider, opts \\ %{}) do
-    guess_lookup(provider, value, opts)
+    case guess_lookup(provider, value, opts) do
+      {:ok, result} -> result
+      anything -> anything
+    end
   end
+
+  ##############################################################################
 
   defp guess_lookup(provider, any, opts) do
     lookup_arg =
@@ -31,6 +55,8 @@ defmodule LibLatLon do
   ##############################################################################
 
   defmodule Utils do
+    @moduledoc false
+
     @spec safe_float(binary() | number()) :: float()
     def safe_float(v) when is_float(v), do: v
     def safe_float(v) when is_integer(v), do: v * 1.0

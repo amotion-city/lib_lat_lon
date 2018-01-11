@@ -13,8 +13,16 @@ defmodule LibLatLon.Providers.OpenStreetMap do
   @reverse_defaults %{format: :json, zoom: 16, addressdetails: 1}
   @search_defaults %{format: :json, polygon_geojson: 1, viewbox: ""}
 
+  @doc false
   def name(), do: "Open Street Map"
 
+  @doc """
+  Implements a lookup for `OpenStreetMap` provider. Returns either
+    `{:ok, %LibLatLon.Info{}}` or `{:error, reason} tuple.
+
+  Used internally by [`LibLatLon.lookup/1`].
+  """
+  @spec lookup(LibLatLon.Coords.t | String.t, %{}) :: {:ok, LibLatLon.Info.t} | {:error, any()}
   def lookup(input, opts \\ @defaults)
 
   # "https://nominatim.openstreetmap.org/reverse?format=json&
@@ -43,15 +51,6 @@ defmodule LibLatLon.Providers.OpenStreetMap do
     [@search, query]
     |> Enum.join("?")
     |> do_lookup()
-  end
-
-  def guess_lookup(any, opts \\ @defaults) do
-    lookup_arg =
-      case LibLatLon.Coords.coordinate(any) do
-        {:ok, %LibLatLon.Coords{} = result} -> result
-        _ -> inspect(any)
-      end
-    lookup(lookup_arg, opts)
   end
 
   ##############################################################################

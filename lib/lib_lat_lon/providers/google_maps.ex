@@ -13,8 +13,16 @@ defmodule LibLatLon.Providers.GoogleMaps do
 
   @defaults %{language: "en", key: @key}
 
+  @doc false
   def name(), do: "Open Street Map"
 
+  @doc """
+  Implements a lookup for `GoogleMaps` provider. Returns either
+    `{:ok, %LibLatLon.Info{}}` or `{:error, reason} tuple.
+
+  Used internally by [`LibLatLon.lookup/1`].
+  """
+  @spec lookup(LibLatLon.Coords.t | String.t, %{}) :: {:ok, LibLatLon.Info.t} | {:error, any()}
   def lookup(input, opts \\ defaults())
 
   # "https://maps.googleapis.com/maps/api/geocode/json?"
@@ -162,7 +170,7 @@ defmodule LibLatLon.Providers.GoogleMaps do
          {:ok, result} <- normalize(result),
          {:ok, result} <- smart_filter(result),
          {:ok, result} <- LibLatLon.Info.from_map(result) do
-      result
+      {:ok, result}
     else
       {:ok, %HTTPoison.Response{status_code: 404}} ->
         {:error, :not_found}

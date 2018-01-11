@@ -1,7 +1,7 @@
 defmodule LibLatLon.Providers.Dummy do
-  @moduledoc """
-    `OpenStreetMap` provider implementation.
-  """
+  @moduledoc false
+
+  # `OpenStreetMap` provider implementation to be injected into tests.
 
   @behaviour LibLatLon.Provider
 
@@ -14,7 +14,8 @@ defmodule LibLatLon.Providers.Dummy do
   def lookup(%LibLatLon.Coords{}, _opts) do
     @infos
     |> Enum.random()
-    |> File.read()
+    |> File.read!()
+    |> :erlang.binary_to_term()
   end
 
   # # "https://nominatim.openstreetmap.org/search?format=json

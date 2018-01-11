@@ -1,6 +1,32 @@
 defmodule LibLatLon.Coords do
+  @moduledoc """
+  Main struct to be used as coordinates representation.
+
+  One might cast nearly everything to `LibLatLon.Coord` with
+  [`LibLatLon.Coord.borrow/1`] and/or [`LibLatLon.Coord.borrow/2`].
+
+  This struct implements both [`String.Chars`] and [`Inspect`] protocols.
+  The fancy string representation of any lat/lon pair might be get by
+  [`Kernel.to_string/1`]:
+
+      iex> to_string(LibLatLon.Coords.borrow(lat: 41.38, lon: 2.19))
+      "41°22´48.0˝N,2°11´24.0˝E"
+
+  Note, that this representation might be used as is when querying any
+  geolocation services and/or `GoogleMaps`. Try:
+
+  * http://maps.google.com?search=41°22´48.0˝N,2°11´24.0˝E
+  """
   alias LibLatLon.Coords
 
+  @typedoc """
+  The type to store coordinates.
+
+  Mostly used fields are `lat` and `lon`, stored as [`Float.t`]. Also
+  might contain `altitude` and `direction` to calculate the latitude
+  and langitude for the destination point (mostly used when dealing with
+  `EXIF` information from images.)
+  """
   @type t :: %__MODULE__{
     lat: number(),
     lon: number(),
@@ -9,34 +35,63 @@ defmodule LibLatLon.Coords do
     magnetic?: true | false
   }
 
-  @decimal_precision Application.get_env(:lib_lat_lon, :decimal_precision, 12)
+  @decimal_precision Application.get_env(:lib_lat_lon, :decimal_precision, 9)
 
   @image_start_marker 0xFFD8
   @fields ~w|lat lon alt direction magnetic?|a
 
   defstruct @fields
 
-  @doc """
-  Converts lat/lon between floats and
-  `[degree,minute,second,semisphere]` representations.
-  """
+  @typedoc "Degrees, minutes and seconds as a tuple"
   @type dms :: {number(), number(), number()}
-  @type dms_array :: [number()]
-  @type dms_ss :: {dms() | dms_array(), binary() | nil}
+  @typedoc "Degrees, minutes and seconds as a list"
+  @type dms_list :: [number()]
+  @typedoc "Degrees, minutes and seconds with an optional semisphere reference"
+  @type dms_ss :: {dms() | dms_list(), binary() | nil}
 
+  @doc """
+  Converts `{{degree, minute, second}, semisphere}` or
+    `{[degree, minute, second], semisphere}` representation into
+    [`LibLatLon.Coords`].
+  """
   @spec borrow(dms(), any()) :: number()
   def borrow({d, m, s}, ss), do: borrow(d, m, s, ss)
 
-  @spec borrow(dms_array(), any()) :: number()
+  @spec borrow(dms_list(), any()) :: number()
   def borrow([d, m, s], ss), do: borrow(d, m, s, ss)
 
+  @doc """
+  Converts `degree, minute, second, semisphere` representation into
+    [`LibLatLon.Coords`]. When the last parameter `semisphere` is not one of:
+    `"S"` or `"W"` or `-1` or `:south` or `west`, it is implicitly
+    considered to be in `NE` semisphere.
+  """
   @spec borrow(number(), number(), number(), any()) :: number()
   def borrow(d, m, s, ss \\ nil)
   def borrow(d, m, s, "S"), do: -do_borrow(d, m, s)
+  def borrow(d, m, s, :south), do: -do_borrow(d, m, s)
   def borrow(d, m, s, "W"), do: -do_borrow(d, m, s)
+  def borrow(d, m, s, :west), do: -do_borrow(d, m, s)
   def borrow(d, m, s, -1), do: -do_borrow(d, m, s)
   def borrow(d, m, s, _), do: do_borrow(d, m, s)
 
+  @doc """
+  Converts literally any input to [`LibLatLon.Coords`] instance.
+
+  ## Examples
+
+      iex> LibLatLon.Coords.borrow("41°23´16˝N,2°11´50˝E")
+      %LibLatLon.Coords{lat: 41.38777777777778, lon: 2.197222222222222}
+
+      iex> LibLatLon.Coords.borrow("41°23´16.222˝N,2°11´50.333˝E")
+      %LibLatLon.Coords{lat: 41.387839444444445, lon: 2.197314722222222}
+
+      iex> LibLatLon.Coords.borrow({{{41, 23, 16.0}, "N"}, {{2, 11, 50.0}, "E"}})
+      %LibLatLon.Coords{lat: 41.38777777777778, lon: 2.197222222222222}
+
+      iex> LibLatLon.Coords.borrow(lat: 41.38, lon: 2.19)
+      %LibLatLon.Coords{lat: 41.38, lon: 2.19}
+  """
   @spec borrow(
           {number(), number()}
           | nil
@@ -46,7 +101,7 @@ defmodule LibLatLon.Coords do
           | map()
           | binary()
           | Keyword.t()
-          | %Exexif.Data.Gps{}
+          | Exexif.Data.Gps.t{}
           | number()
         ) :: LibLatLon.Coords.t() | number() | nil
 
@@ -62,17 +117,7 @@ defmodule LibLatLon.Coords do
   def borrow({{d, m, s}, ss}), do: borrow(d, m, s, ss)
   def borrow({[d, m, s], ss}), do: borrow(d, m, s, ss)
 
-  @doc """
-      iex> LibLatLon.Coords.borrow("41°23´16˝N,2°11´50˝E")
-      %LibLatLon.Coords{lat: 41.38777777777778, lon: 2.197222222222222}
-
-      iex> LibLatLon.Coords.borrow("41°23´16.222˝N,2°11´50.333˝E")
-      %LibLatLon.Coords{lat: 41.387839444444445, lon: 2.197314722222222}
-
-      iex> LibLatLon.Coords.borrow({{{41, 23, 16.0}, "N"}, {{2, 11, 50.0}, "E"}})
-      %LibLatLon.Coords{lat: 41.38777777777778, lon: 2.197222222222222}
-  """
-  for id <- 1..3, im <- 1..2, is <- 1..@decimal_precision do
+  for id <- 1..2, im <- 1..2, is <- 1..@decimal_precision do
     def borrow(<<
           d::binary-size(unquote(id)),
           "°",
@@ -121,10 +166,11 @@ defmodule LibLatLon.Coords do
     |> borrow()
   end
 
+  def borrow(latitude: lat, longitude: lon), do: borrow({lat, lon})
+  def borrow(lat: lat, lon: lon), do: borrow({lat, lon})
   def borrow([lat, lon]), do: borrow({lat, lon})
   def borrow(%{lat: lat, lon: lon}), do: borrow({lat, lon})
   def borrow(%{latitude: lat, longitude: lon}), do: borrow({lat, lon})
-  def borrow(latitude: lat, longitude: lon), do: borrow({lat, lon})
 
   def borrow(%Exexif.Data.Gps{
         gps_altitude: alt,
@@ -153,7 +199,14 @@ defmodule LibLatLon.Coords do
   ##############################################################################
 
   @doc """
-      iex> LibLatLon.Coords.lend([41.38777777777778, 2.197222222222222])
+  Converts literally anything, provided as latitude _and_ longitude values
+    to two tuples `{{degree, minute, second}, semisphere}`. Barely used
+    from the outside the package, since [`LibLatLon.Coords.t`] is obviously
+    better type to work with coordinates by all means.
+
+  ## Examples
+
+      iex> LibLatLon.Coords.lend(41.38777777777778, 2.197222222222222)
       {{{41, 23, 16.0}, "N"}, {{2, 11, 50.0}, "E"}}
   """
   @spec lend(number(), number()) :: {dms_ss(), dms_ss()}
@@ -164,11 +217,23 @@ defmodule LibLatLon.Coords do
     |> List.to_tuple()
   end
 
-  @spec lend({number(), number()}) :: {dms_ss(), dms_ss()}
+  @doc """
+  Converts literally anything, provided as combined `latlon` value
+    to two tuples `{{degree, minute, second}, semisphere}`. Barely used
+    from the outside the package, since [`LibLatLon.Coords.t`] is obviously
+    better type to work with coordinates by all means.
+
+  ## Examples
+
+      iex> LibLatLon.Coords.lend({41.38777777777778, 2.197222222222222})
+      {{{41, 23, 16.0}, "N"}, {{2, 11, 50.0}, "E"}}
+
+      iex> LibLatLon.Coords.lend([41.38777777777778, 2.197222222222222])
+      {{{41, 23, 16.0}, "N"}, {{2, 11, 50.0}, "E"}}
+  """
+  @spec lend({number(), number()} | [number()] | LibLatLon.Coords.t) :: {dms_ss(), dms_ss()}
   def lend({dms1, dms2}) when is_number(dms1) and is_number(dms2), do: lend(dms1, dms2)
-  @spec lend([number()]) :: {dms_ss(), dms_ss()}
   def lend([dms1, dms2]) when is_number(dms1) and is_number(dms2), do: lend(dms1, dms2)
-  @spec lend(Coords.t()) :: {dms_ss(), dms_ss()}
   def lend(%Coords{lat: dms1, lon: dms2}), do: lend(dms1, dms2)
 
   @spec do_lend({number(), 0 | 1}) :: dms_ss()
@@ -197,9 +262,6 @@ defmodule LibLatLon.Coords do
       ...> result
       #Coord<[lat: 41.37600333333334, lon: 2.1486783333333332, fancy: "41°22´33.612˝N,2°8´55.242˝E"]>
 
-      iex> LibLatLon.Coords.coordinate!("test/inputs/1.jpg")
-      #Coord<[lat: 41.37600333333334, lon: 2.1486783333333332, fancy: "41°22´33.612˝N,2°8´55.242˝E"]>
-
       iex> LibLatLon.Coords.coordinate("test/inputs/unknown.jpg")
       {:error, :illegal_source_file}
   """
@@ -223,6 +285,15 @@ defmodule LibLatLon.Coords do
 
   def coordinate(whatever), do: {:ok, Coords.borrow(whatever)}
 
+  @doc """
+  Same as [`LibLatLon.Coords.coordinate/1`], but banged.
+
+  ## Examples
+
+      iex> LibLatLon.Coords.coordinate!("test/inputs/1.jpg")
+      #Coord<[lat: 41.37600333333334, lon: 2.1486783333333332, fancy: "41°22´33.612˝N,2°8´55.242˝E"]>
+  """
+  @spec coordinate!(nil | binary() | %{} | any()) :: LibLatLon.Coords.t
   def coordinate!(whatever) do
     case coordinate(whatever) do
       {:ok, result} -> result

@@ -1,13 +1,19 @@
 defmodule LibLatLon.MixProject do
   use Mix.Project
 
+  @app :lib_lat_lon
+  @app_name "LibLatLon"
+  @version "0.3.0"
+
   def project do
     [
-      app: :lib_lat_lon,
-      version: "0.2.0",
+      app: @app,
+      name: @app_name,
+      version: @version,
       elixir: "~> 1.5",
       start_permanent: Mix.env() == :prod,
       description: description(),
+      docs: docs(),
       package: package(),
       deps: deps()
     ]
@@ -16,7 +22,7 @@ defmodule LibLatLon.MixProject do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      extra_applications: ~w|logger httpoison|a,
+      extra_applications: ~w|logger httpoison porcelain|a,
       mod: {LibLatLon.Application, []}
     ]
   end
@@ -27,6 +33,7 @@ defmodule LibLatLon.MixProject do
       {:httpoison, "~> 1.0"},
       {:jason, "~> 1.0-rc1"},
       {:exexif, "~> 0.0"},
+      {:porcelain, "~> 2.0"},
 
       {:ex_doc, ">= 0.0.0", only: :dev}
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
@@ -49,9 +56,22 @@ defmodule LibLatLon.MixProject do
       maintainers: ["Aleksei Matiushkin"],
       licenses: ["MIT"],
       links: %{
-        "GitHub" => "https://github.com/amotion-city/lib_lat_lon",
-        "Docs" => "https://hexdocs.pm/lib_lat_lon"
+        "GitHub" => "https://github.com/amotion-city/#{@app}",
+        "Docs" => "https://hexdocs.pm/#{@app}"
       }
+    ]
+  end
+
+  defp docs() do
+    [
+      main: @app_name,
+      source_ref: "v#{@version}",
+      canonical: "http://hexdocs.pm/#{@app}",
+      logo: "stuff/images/logo.png",
+      source_url: "https://github.com/amotion-city/#{@app}",
+      extras: [
+        "stuff/pages/intro.md"
+      ]
     ]
   end
 end
