@@ -122,19 +122,6 @@ defmodule LibLatLon.Coords do
   for id <- 1..2,
       im <- 1..2,
       is <- 1..@decimal_precision do
-    def borrow(<<
-          d::binary-size(unquote(id)),
-          "°",
-          m::binary-size(unquote(im)),
-          "´",
-          s::binary-size(unquote(is)),
-          "˝",
-          ss::binary-size(1)
-        >>) do
-      [d, m, s]
-      |> Enum.map(fn v -> with {v, ""} <- Float.parse(v), do: v end)
-      |> borrow(ss)
-    end
 
     for jd <- 1..2,
         jm <- 1..2,
@@ -161,9 +148,23 @@ defmodule LibLatLon.Coords do
             [[d1, m1, s1], [d2, m2, s2]],
             &Enum.map(&1, fn v -> with {v, ""} <- Float.parse(v), do: v end)
           )
-IO.inspect({{dms1, ss1}, {dms2, ss2}}, label: "★★★")
+
         borrow({{dms1, ss1}, {dms2, ss2}})
       end
+    end
+
+    def borrow(<<
+          d::binary-size(unquote(id)),
+          "°",
+          m::binary-size(unquote(im)),
+          "´",
+          s::binary-size(unquote(is)),
+          "˝",
+          ss::binary-size(1)
+        >>) do
+      [d, m, s]
+      |> Enum.map(fn v -> with {v, ""} <- Float.parse(v), do: v end)
+      |> borrow(ss)
     end
   end
 
@@ -202,6 +203,7 @@ IO.inspect({{dms1, ss1}, {dms2, ss2}}, label: "★★★")
   end
 
   def borrow({lat, lon}), do: %LibLatLon.Coords{lat: borrow(lat), lon: borrow(lon)}
+  def borrow(shit), do: {:error, {:weird_input, shit}}
 
   @spec do_borrow(number(), number(), number()) :: number()
   defp do_borrow(d, m, s), do: d + m / 60 + s / 3600
@@ -273,7 +275,7 @@ IO.inspect({{dms1, ss1}, {dms2, ss2}}, label: "★★★")
       #Coord<[lat: 41.37600333333334, lon: 2.1486783333333332, fancy: "41°22´33.612˝N,2°8´55.242˝E"]>
 
       iex> LibLatLon.Coords.coordinate("test/inputs/unknown.jpg")
-      {:error, :illegal_source_file}
+      {:error, {:weird_input, [nil]}}
   """
   @spec coordinate(nil | binary() | %{} | any()) :: {:ok, LibLatLon.Coords.t()} | {:error, atom()}
   def coordinate(<<@image_start_marker::16, _::binary>> = buffer),
@@ -284,7 +286,11 @@ IO.inspect({{dms1, ss1}, {dms2, ss2}}, label: "★★★")
          {:ok, info} <- Exexif.exif_from_jpeg_file(file) do
       coordinate(info)
     else
-      false -> {:ok, Coords.borrow(file)}
+      false ->
+        case Coords.borrow(file) do
+          {:error, anything} -> {:error, anything}
+          result -> {:ok, result}
+        end
       whatever -> {:error, {:illegal_source_file, whatever}}
     end
   end
