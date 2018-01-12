@@ -90,13 +90,16 @@ defmodule LibLatLon.Info do
     end
   end
 
+  def from_map([]), do: {:error, :no_data}
+  def from_map([%{} = input]), do: from_map(input)
   def from_map(list) when is_list(list), do: {:ok, from_map!(list)}
 
   @doc """
   The same as `LibLatLon.Info.from_map/1`, but banged.
   """
-  def from_map!([]), do: []
   def from_map!(%{} = input), do: with({:ok, result} <- from_map(input), do: result)
+  def from_map!([]), do: raise LibLatLon.Issue, reason: :no_data
+  def from_map!([%{} = input]), do: from_map!(input)
   def from_map!([%{} = h | t]), do: [from_map!(h) | from_map!(t)]
 
   @doc """
