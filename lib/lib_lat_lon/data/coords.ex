@@ -136,7 +136,7 @@ defmodule LibLatLon.Coords do
       |> borrow(ss)
     end
 
-    for jd <- 1..3,
+    for jd <- 1..2,
         jm <- 1..2,
         js <- 1..@decimal_precision do
       def borrow(<<
@@ -161,7 +161,7 @@ defmodule LibLatLon.Coords do
             [[d1, m1, s1], [d2, m2, s2]],
             &Enum.map(&1, fn v -> with {v, ""} <- Float.parse(v), do: v end)
           )
-
+IO.inspect({{dms1, ss1}, {dms2, ss2}}, label: "★★★")
         borrow({{dms1, ss1}, {dms2, ss2}})
       end
     end
@@ -284,8 +284,8 @@ defmodule LibLatLon.Coords do
          {:ok, info} <- Exexif.exif_from_jpeg_file(file) do
       coordinate(info)
     else
-      false -> {:error, :illegal_source_file}
-      whatever -> whatever
+      false -> {:ok, Coords.borrow(file)}
+      whatever -> {:error, {:illegal_source_file, whatever}}
     end
   end
 
