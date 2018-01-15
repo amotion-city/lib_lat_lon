@@ -167,7 +167,6 @@ defmodule LibLatLon.Providers.GoogleMaps do
   end
 
   defp do_lookup(query) do
-    # FIXME BETTER ERROR HANDLING
     with {:ok, %HTTPoison.Response{status_code: 200, body: body}} <- HTTPoison.get(query),
          {:ok, result} <- Jason.decode(body),
          {:ok, result} <- normalize(result),
