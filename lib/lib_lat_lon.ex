@@ -89,7 +89,8 @@ defmodule LibLatLon do
     def keywordize(nil), do: nil
 
     def keywordize(%{} = map) do
-      Enum.map(map, fn
+      map
+      |> Enum.map(fn
         {k, v} when is_binary(k) -> {String.to_atom(k), v}
         {k, v} when is_atom(k) -> {k, v}
         {k, v} -> {k |> inspect() |> String.to_atom(), v}

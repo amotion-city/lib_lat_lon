@@ -16,7 +16,10 @@ jobs:
     steps:
       - checkout
 
+      - run: mix credo
+      - run: mix coveralls.json
+      - run: bash <(curl -s https://codecov.io/bash)
       - run: mix local.hex --force
-      - run: mix local.rebar
+      - run: mix local.rebar --force
       - run: mix deps.get
       - run: mix test

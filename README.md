@@ -2,7 +2,9 @@
 
 [![CircleCI](https://circleci.com/gh/amotion-city/lib_lat_lon.svg?style=svg)](https://circleci.com/gh/amotion-city/lib_lat_lon) 
 [![HexPM](https://img.shields.io/hexpm/v/lib_lat_lon.svg)](https://hex.pm/packages/lib_lat_lon) 
+[![License badge](https://img.shields.io/hexpm/l/lib_lat_lon.svg)](https://github.com/amotion-city/lib_lat_lon/blob/master/LICENSE.md) 
 [![Read the Docs](/stuff/images/docs-passing.png?raw=true)](https://hexdocs.pm/lib_lat_lon) 
+[![Code coverage badge](https://img.shields.io/codecov/c/github/amotion-city/lib_lat_lon/master.svg)](https://codecov.io/gh/amotion-city/lib_lat_lon/branch/master) 
 handy library for managing geo coordinates, that includes _direct/reverse geocoding_ features
 
 ## Installation
