@@ -22,7 +22,7 @@ jobs:
       - run: mix deps.get
 
       - run: mix credo
-      - run: mix coveralls.json
-      - run: bash <(curl -s https://codecov.io/bash)
+      - run: MIX_ENV=test mix coveralls.json
+      - run: MIX_ENV=test bash <(curl -s https://codecov.io/bash)
 
       - run: mix test
