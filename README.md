@@ -5,7 +5,7 @@
 [![Inline docs](http://inch-ci.org/github/amotion-city/lib_lat_lon.svg)](http://inch-ci.org/github/amotion-city/lib_lat_lon) 
 [![License badge](https://img.shields.io/hexpm/l/lib_lat_lon.svg)](https://github.com/amotion-city/lib_lat_lon/blob/master/LICENSE.md) 
 [![Read the Docs](/stuff/images/docs-passing.png?raw=true)](https://hexdocs.pm/lib_lat_lon) 
-[![Code coverage badge](https://img.shields.io/codecov/c/github/amotion-city/lib_lat_lon/master.svg)]
+[![Code coverage badge](https://img.shields.io/codecov/c/github/amotion-city/lib_lat_lon/master.svg)](https://codecov.io/gh/amotion-city/lib_lat_lon)
 
 **`LibLatLon`** is a **handy library** for managing **geo coordinates**, that includes **_direct/reverse geocoding_** features
 
@@ -14,7 +14,7 @@
 ```elixir
 def deps do
   [
-    {:lib_lat_lon, "~> 0.3"}
+    {:lib_lat_lon, "~> 0.4"}
   ]
 end
 ```
