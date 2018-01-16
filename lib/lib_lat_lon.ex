@@ -47,6 +47,7 @@ defmodule LibLatLon do
 
   ##############################################################################
 
+  @spec guess_lookup(atom())
   defp guess_lookup(provider, any, opts) do
     lookup_arg =
       case LibLatLon.Coords.coordinate(any) do
