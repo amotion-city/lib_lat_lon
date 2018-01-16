@@ -37,6 +37,7 @@ defmodule LibLatLon do
       }
 
   """
+  @spec lookup(any(), atom(), %{}) :: {:ok, LibLatLon.Info.t()} | {:error, any()}
   def lookup(value, provider \\ @default_provider, opts \\ %{}) do
     case guess_lookup(provider, value, opts) do
       {:ok, result} -> result

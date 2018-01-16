@@ -105,7 +105,7 @@ defmodule LibLatLon.Coords do
               {}
               | number()
             )
-        ) :: LibLatLon.Coords.t() | number() | nil
+        ) :: LibLatLon.Coords.t() | number() | nil | {:error, any()}
 
   def borrow(nil), do: nil
   def borrow([nil, _]), do: nil
@@ -249,7 +249,7 @@ defmodule LibLatLon.Coords do
   def lend(%Coords{lat: dms1, lon: dms2}), do: lend(dms1, dms2)
 
   @spec do_lend({number(), 0 | 1}) :: dms_ss()
-  def do_lend({dms, idx}) when is_number(dms) do
+  defp do_lend({dms, idx}) when is_number(dms) do
     ss = dms > 0
     abs = if ss, do: dms, else: -dms
     d = abs |> Float.floor() |> Kernel.round()
@@ -277,7 +277,7 @@ defmodule LibLatLon.Coords do
       iex> LibLatLon.Coords.coordinate("test/inputs/unknown.jpg")
       {:error, {:weird_input, [nil]}}
   """
-  @spec coordinate(nil | binary() | %{} | any()) :: {:ok, LibLatLon.Coords.t()} | {:error, atom()}
+  @spec coordinate(nil | binary() | %{} | any()) :: {:ok, LibLatLon.Coords.t()} | {:error, any()}
   def coordinate(<<@image_start_marker::16, _::binary>> = buffer),
     do: with({:ok, info} <- Exexif.exif_from_jpeg_buffer(buffer), do: coordinate(info))
 
@@ -299,7 +299,13 @@ defmodule LibLatLon.Coords do
 
   def coordinate(%{gps: %Exexif.Data.Gps{} = gps}), do: coordinate(gps)
 
-  def coordinate(whatever), do: {:ok, Coords.borrow(whatever)}
+  def coordinate(whatever) do
+    case Coords.borrow(whatever) do
+      {:error, reason} -> {:error, reason}
+      %LibLatLon.Coords{} = coords -> {:ok, coords}
+      whatever -> {:error, {:malformed, whatever}}
+    end
+  end
 
   @doc """
   Same as `LibLatLon.Coords.coordinate/1`, but banged.
@@ -309,7 +315,7 @@ defmodule LibLatLon.Coords do
       iex> LibLatLon.Coords.coordinate!("test/inputs/1.jpg")
       #Coord<[lat: 41.37600333333334, lon: 2.1486783333333332, fancy: "41°22´33.612˝N,2°8´55.242˝E"]>
   """
-  @spec coordinate!(nil | binary() | %{} | any()) :: LibLatLon.Coords.t()
+  @spec coordinate!(nil | binary() | %{} | any()) :: LibLatLon.Coords.t() | no_return()
   def coordinate!(whatever) do
     case coordinate(whatever) do
       {:ok, result} -> result
@@ -320,6 +326,7 @@ defmodule LibLatLon.Coords do
   ##############################################################################
 
   defimpl String.Chars, for: LibLatLon.Coords do
+    @doc "Returns a fancy representation of coordinates, like “41°22´33.612˝N,2°8´55.242˝E”"
     def to_string(term) do
       # {{{41, 23, 16.0}, "N"}, {{2, 11, 50.0}, "E"}}
       {{{d1, m1, s1}, ss1}, {{d2, m2, s2}, ss2}} = LibLatLon.Coords.lend(term)
@@ -330,6 +337,10 @@ defmodule LibLatLon.Coords do
   defimpl Inspect, for: LibLatLon.Coords do
     import Inspect.Algebra
 
+    @doc ~S"""
+    Returns a `doc`, containing the latitude, the longiture,
+      and the fancy representation of coordinates, like “41°22´33.612˝N,2°8´55.242˝E”
+    """
     def inspect(%{lat: lat, lon: lon}, opts) do
       inner = [lat: lat, lon: lon, fancy: to_string(%LibLatLon.Coords{lat: lat, lon: lon})]
       concat(["#Coord<", to_doc(inner, opts), ">"])

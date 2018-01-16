@@ -3,7 +3,7 @@ defmodule LibLatLon.MixProject do
 
   @app :lib_lat_lon
   @app_name "LibLatLon"
-  @version "0.3.5"
+  @version "0.4.0"
 
   def project do
     [
@@ -43,7 +43,8 @@ defmodule LibLatLon.MixProject do
       {:exexif, "~> 0.0"},
       {:porcelain, "~> 2.0"},
       {:credo, "~> 0.8", only: [:dev, :test]},
-      {:ex_doc, ">= 0.0.0", only: :dev},
+      {:inch_ex, ">= 0.0.0", only: [:dev, :docs]},
+      {:ex_doc, ">= 0.0.0", only: [:dev, :docs]},
       {:excoveralls, "~> 0.8", only: :test}
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
     ]
