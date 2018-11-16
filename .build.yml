@@ -1,0 +1,16 @@
+image: archlinux
+packages:
+  - cmake
+  - wlc-git
+  - erlang
+  - elixir
+sources:
+  - https://git.sr.ht/~mudasobwa/lib_lat_lon
+tasks:
+  - setup: |
+      cd lib_lat_lon
+      mix local.hex --force
+      mix local.rebar --force
+      mix deps.get
+  - build: |
+      mix test
