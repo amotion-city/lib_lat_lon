@@ -13,4 +13,5 @@ tasks:
       mix local.rebar --force
       mix deps.get
   - build: |
+      cd lib_lat_lon
       mix test
