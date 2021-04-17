@@ -10,7 +10,7 @@ defmodule LibLatLon.MixProject do
       app: @app,
       name: @app_name,
       version: @version,
-      elixir: "~> 1.5",
+      elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
       description: description(),
       docs: docs(),
