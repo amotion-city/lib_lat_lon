@@ -3,7 +3,7 @@ defmodule LibLatLon.MixProject do
 
   @app :lib_lat_lon
   @app_name "LibLatLon"
-  @version "0.4.1"
+  @version "0.5.0"
 
   def project do
     [
@@ -19,7 +19,7 @@ defmodule LibLatLon.MixProject do
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
-        "coveralls": :test,
+        coveralls: :test,
         "coveralls.detail": :test,
         "coveralls.post": :test,
         "coveralls.html": :test
@@ -39,14 +39,13 @@ defmodule LibLatLon.MixProject do
   defp deps do
     [
       {:httpoison, "~> 1.5"},
-      {:jason, "~> 1.0-rc1"},
+      {:jason, "~> 1.0"},
       {:exexif, "~> 0.0"},
       {:porcelain, "~> 2.0"},
-      {:credo, "~> 0.8", only: [:dev, :test]},
+      {:credo, "~> 1.0", only: [:dev, :test]},
       {:inch_ex, ">= 0.0.0", only: [:dev, :docs]},
       {:ex_doc, ">= 0.0.0", only: [:dev, :docs]},
       {:excoveralls, "~> 0.8", only: :test}
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
     ]
   end
 
