@@ -48,7 +48,7 @@ defmodule LibLatLon.MixProject do
       {:credo, "~> 1.0", only: [:dev, :ci]},
       {:inch_ex, ">= 0.0.0", only: [:dev, :docs]},
       {:ex_doc, ">= 0.0.0", only: [:dev, :docs]},
-      {:excoveralls, "~> 0.8", only: :ci},
+      {:excoveralls, "~> 0.8", only: [:test, :ci]},
       {:dialyxir, "~> 1.0", only: [:dev, :ci], runtime: false}
     ]
   end
