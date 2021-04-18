@@ -10,7 +10,7 @@ defmodule LibLatLon.MixProject do
       app: @app,
       name: @app_name,
       version: @version,
-      elixir: "~> 1.5",
+      elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
       description: description(),
       docs: docs(),
@@ -38,7 +38,7 @@ defmodule LibLatLon.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:httpoison, "~> 1.0"},
+      {:httpoison, "~> 1.5"},
       {:jason, "~> 1.0-rc1"},
       {:exexif, "~> 0.0"},
       {:porcelain, "~> 2.0"},
