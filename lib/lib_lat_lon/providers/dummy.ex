@@ -7,7 +7,7 @@ defmodule LibLatLon.Providers.Dummy do
 
   @infos ~w|test/inputs/dummy_info_41_2.lll|
 
-  def name(), do: "Dummy (I’m used for tests)"
+  def name, do: "Dummy (I’m used for tests)"
 
   def lookup(input, opts \\ %{})
 

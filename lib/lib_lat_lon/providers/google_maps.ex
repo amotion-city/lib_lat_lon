@@ -14,7 +14,7 @@ defmodule LibLatLon.Providers.GoogleMaps do
   @defaults %{language: "en", key: @key}
 
   @doc false
-  def name(), do: "Open Street Map"
+  def name, do: "Google Maps"
 
   @doc """
   Implements a lookup for `GoogleMaps` provider. Returns either

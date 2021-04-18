@@ -1,7 +1,7 @@
 # ![{:ok, 📍}](/stuff/images/logo.png?raw=true)
 
 [![HexPM](https://img.shields.io/hexpm/v/lib_lat_lon.svg)](https://hex.pm/packages/lib_lat_lon) 
-[![CircleCI](https://circleci.com/gh/amotion-city/lib_lat_lon.svg?style=svg)](https://circleci.com/gh/amotion-city/lib_lat_lon) 
+[![GHA](https://github.com/amotion-city/lib_lat_lon/workflows/Test/badge.svg)](https://github.com/amotion-city/lib_lat_lon/actions) 
 [![Inline docs](http://inch-ci.org/github/amotion-city/lib_lat_lon.svg)](http://inch-ci.org/github/amotion-city/lib_lat_lon) 
 [![License badge](https://img.shields.io/hexpm/l/lib_lat_lon.svg)](https://github.com/amotion-city/lib_lat_lon/blob/master/LICENSE.md) 
 [![Read the Docs](/stuff/images/docs-passing.png?raw=true)](https://hexdocs.pm/lib_lat_lon) 

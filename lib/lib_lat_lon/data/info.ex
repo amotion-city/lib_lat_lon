@@ -77,17 +77,18 @@ defmodule LibLatLon.Info do
     fields in unified format.
   """
 
-  @spec from_map(map() | list()) :: {:ok, LibLatLon.Info.t} | {:error, atom()}
+  @spec from_map(map() | list()) :: {:ok, LibLatLon.Info.t()} | {:error, atom()}
   def from_map(%{} = map) do
     with {:ok, bounds} <- LibLatLon.Bounds.from_lat_lon(map.bounds),
          {:ok, coords} <- LibLatLon.Coords.coordinate({map.lat, map.lon}) do
-      {:ok, %__MODULE__{
-        bounds: bounds,
-        coords: coords,
-        details: map.details,
-        meta: map.meta,
-        address: map.display
-      }}
+      {:ok,
+       %__MODULE__{
+         bounds: bounds,
+         coords: coords,
+         details: map.details,
+         meta: map.meta,
+         address: map.display
+       }}
     end
   end
 
@@ -98,9 +99,9 @@ defmodule LibLatLon.Info do
   @doc """
   The same as `LibLatLon.Info.from_map/1`, but banged.
   """
-  @spec from_map!(map() | list()) :: LibLatLon.Info.t | no_return()
+  @spec from_map!(map() | list()) :: LibLatLon.Info.t() | no_return()
   def from_map!(%{} = input), do: with({:ok, result} <- from_map(input), do: result)
-  def from_map!([]), do: raise LibLatLon.Issue, reason: :no_data
+  def from_map!([]), do: raise(LibLatLon.Issue, reason: :no_data)
   def from_map!([%{} = input]), do: from_map!(input)
   def from_map!([%{} = h | t]), do: [from_map!(h) | from_map!(t)]
 
@@ -117,7 +118,7 @@ defmodule LibLatLon.Info do
       iex> LibLatLon.Info.format(info, "⚑ %{country}, %{city}, %{postcode}.")
       "⚑ España, Barcelona, 08021."
   """
-  @spec format(LibLatLon.Info.t, binary()) :: binary()
+  @spec format(LibLatLon.Info.t(), binary()) :: binary()
   def format(%LibLatLon.Info{details: %{} = content}, format) when is_binary(format) do
     ~r|%{(.*?)}|
     |> Regex.replace(format, fn _, term ->

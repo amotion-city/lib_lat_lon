@@ -100,11 +100,8 @@ defmodule LibLatLon.Coords do
           | [number()]
           | map()
           | binary()
-          | Keyword.t()
-          | Exexif.Data.Gps.t(
-              {}
-              | number()
-            )
+          | keyword()
+          | %Exexif.Data.Gps{}
         ) :: LibLatLon.Coords.t() | number() | nil | {:error, any()}
 
   def borrow(nil), do: nil
@@ -122,7 +119,6 @@ defmodule LibLatLon.Coords do
   for id <- 1..2,
       im <- 1..2,
       is <- 1..@decimal_precision do
-
     for jd <- 1..2,
         jm <- 1..2,
         js <- 1..@decimal_precision do
@@ -291,7 +287,9 @@ defmodule LibLatLon.Coords do
           {:error, anything} -> {:error, anything}
           result -> {:ok, result}
         end
-      whatever -> {:error, {:illegal_source_file, whatever}}
+
+      whatever ->
+        {:error, {:illegal_source_file, whatever}}
     end
   end
 
@@ -301,8 +299,8 @@ defmodule LibLatLon.Coords do
 
   def coordinate(whatever) do
     case Coords.borrow(whatever) do
-      {:error, reason} -> {:error, reason}
       %LibLatLon.Coords{} = coords -> {:ok, coords}
+      {:error, reason} -> {:error, reason}
       whatever -> {:error, {:malformed, whatever}}
     end
   end

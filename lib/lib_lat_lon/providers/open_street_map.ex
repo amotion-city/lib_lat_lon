@@ -14,7 +14,7 @@ defmodule LibLatLon.Providers.OpenStreetMap do
   @search_defaults %{format: :json, polygon_geojson: 1, viewbox: ""}
 
   @doc false
-  def name(), do: "Open Street Map"
+  def name, do: "Open Street Map"
 
   @doc """
   Implements a lookup for `OpenStreetMap` provider. Returns either
@@ -69,7 +69,7 @@ defmodule LibLatLon.Providers.OpenStreetMap do
   #     "suburb" => "la Vila Olímpica del Poblenou"
   #   },
   #   "boundingbox" => ["41.3876663", "41.3917431", "2.196602", "2.2031084"],
-  #   "display_name" => "Avinguda del Litoral, la Vila Olímpica del Poblenou, Sant Martí, Barcelona, BCN, Catalonia, 08020, Spain",
+  #   "display_name" => "Avinguda del Litoral, [...], Barcelona, BCN, Catalonia, 08020, Spain",
   #   "lat" => "41.3899932",
   #   "licence" => "Data © OpenStreetMap contributors, ODbL 1.0. http://www.openstreetmap.org/copyright",
   #   "lon" => "2.2000054",

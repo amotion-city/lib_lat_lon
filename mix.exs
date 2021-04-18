@@ -12,6 +12,7 @@ defmodule LibLatLon.MixProject do
       version: @version,
       elixir: "~> 1.10",
       start_permanent: Mix.env() == :prod,
+      aliases: aliases(),
       description: description(),
       docs: docs(),
       xref: [exclude: []],
@@ -19,10 +20,12 @@ defmodule LibLatLon.MixProject do
       deps: deps(),
       test_coverage: [tool: ExCoveralls],
       preferred_cli_env: [
-        coveralls: :test,
-        "coveralls.detail": :test,
-        "coveralls.post": :test,
-        "coveralls.html": :test
+        quality: :ci,
+        "quality.ci": :ci,
+        coveralls: :ci,
+        "coveralls.detail": :ci,
+        "coveralls.post": :ci,
+        "coveralls.html": :ci
       ]
     ]
   end
@@ -42,10 +45,22 @@ defmodule LibLatLon.MixProject do
       {:jason, "~> 1.0"},
       {:exexif, "~> 0.0"},
       {:porcelain, "~> 2.0"},
-      {:credo, "~> 1.0", only: [:dev, :test]},
+      {:credo, "~> 1.0", only: [:dev, :ci]},
       {:inch_ex, ">= 0.0.0", only: [:dev, :docs]},
       {:ex_doc, ">= 0.0.0", only: [:dev, :docs]},
-      {:excoveralls, "~> 0.8", only: :test}
+      {:excoveralls, "~> 0.8", only: :ci},
+      {:dialyxir, "~> 1.0", only: [:dev, :ci], runtime: false}
+    ]
+  end
+
+  defp aliases do
+    [
+      quality: ["format", "credo --strict", "dialyzer"],
+      "quality.ci": [
+        "format --check-formatted",
+        "credo --strict",
+        "dialyzer --halt-exit-status"
+      ]
     ]
   end
 

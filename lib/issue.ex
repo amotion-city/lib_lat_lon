@@ -6,12 +6,12 @@ defmodule LibLatLon.Issue do
   @default_reason :unknown
 
   @type t :: %__MODULE__{
-    message: String.t,
-    reason: atom(),
-    bag: Keyword.t
-  }
+          message: String.t(),
+          reason: atom(),
+          bag: keyword()
+        }
 
-  @spec exception(Keyword.t | String.t) :: LibLatLon.Issue.t
+  @spec exception(keyword() | String.t()) :: Exception.t()
   def exception(reason: reason),
     do: exception(reason: reason, bag: [])
 
@@ -23,7 +23,7 @@ defmodule LibLatLon.Issue do
   def exception(message) when is_binary(message),
     do: exception(message, [])
 
-  @spec exception(String.t, Keyword.t | Map.t) :: LibLatLon.Issue.t
+  @spec exception(String.t(), keyword() | map()) :: Exception.t()
   def exception(message, %{} = bag) when is_binary(message),
     do: exception(message, Map.to_list(bag))
 
@@ -36,5 +36,4 @@ defmodule LibLatLon.Issue do
       bag: bag[:bag] || bag
     }
   end
-
 end
