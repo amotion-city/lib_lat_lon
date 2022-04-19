@@ -43,7 +43,7 @@ defmodule LibLatLon.MixProject do
     [
       {:httpoison, "~> 1.5"},
       {:jason, "~> 1.0"},
-      {:exexif, "~> 0.0"},
+      {:nextexif, "~> 0.0"},
       {:porcelain, "~> 2.0"},
       {:credo, "~> 1.0", only: [:dev, :ci]},
       {:inch_ex, ">= 0.0.0", only: [:dev, :docs]},
