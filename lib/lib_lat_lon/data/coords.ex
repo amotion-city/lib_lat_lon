@@ -18,7 +18,14 @@ defmodule LibLatLon.Coords do
   * http://maps.google.com?search=41°22´48.0˝N,2°11´24.0˝E
   """
 
-  Code.ensure_compiled!(Exexif)
+  case Code.ensure_compiled(Exexif) do
+    {:module, Exexif} ->
+      :ok
+
+    {:error, reason} ->
+      raise ArgumentError,
+            "could not load module #{inspect(Exexif)} due to reason #{inspect(reason)}"
+  end
 
   alias LibLatLon.Coords
 
