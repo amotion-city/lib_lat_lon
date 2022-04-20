@@ -26,8 +26,8 @@ jobs:
           elixir-version: ${{matrix.pair.elixir}}
       - name: Install → Compile dependencies
         run: |
-          MIX_ENV=test mix do deps.get, deps.compile
+          mix do deps.get, deps.compile
       - name: Run tests
         run: |
-          MIX_ENV=test mix test
-          MIX_ENV=test mix coveralls.json
+          mix test
+          mix coveralls.json

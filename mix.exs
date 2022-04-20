@@ -22,10 +22,10 @@ defmodule LibLatLon.MixProject do
       preferred_cli_env: [
         quality: :ci,
         "quality.ci": :ci,
-        coveralls: :test,
-        "coveralls.detail": :test,
-        "coveralls.post": :test,
-        "coveralls.html": :test
+        coveralls: :ci,
+        "coveralls.detail": :ci,
+        "coveralls.post": :ci,
+        "coveralls.html": :ci
       ]
     ]
   end
