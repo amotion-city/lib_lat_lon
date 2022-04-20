@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :lib_lat_lon, :decimal_precision, 4
 

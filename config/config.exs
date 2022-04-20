@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 ### EXTERNALS
 config :porcelain, driver: Porcelain.Driver.Basic

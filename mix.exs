@@ -3,7 +3,7 @@ defmodule LibLatLon.MixProject do
 
   @app :lib_lat_lon
   @app_name "LibLatLon"
-  @version "0.5.1"
+  @version "0.6.0"
 
   def project do
     [
@@ -43,8 +43,8 @@ defmodule LibLatLon.MixProject do
     [
       {:httpoison, "~> 1.5"},
       {:jason, "~> 1.0"},
-      {:exexif, "~> 0.0"},
       {:porcelain, "~> 2.0"},
+      {:exexif, "~> 0.0", only: [:ci]},
       {:credo, "~> 1.0", only: [:dev, :ci]},
       {:inch_ex, ">= 0.0.0", only: [:dev, :docs]},
       {:ex_doc, ">= 0.0.0", only: [:dev, :docs]},

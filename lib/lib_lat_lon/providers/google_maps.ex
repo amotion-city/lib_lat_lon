@@ -6,7 +6,7 @@ defmodule LibLatLon.Providers.GoogleMaps do
   @behaviour LibLatLon.Provider
 
   @server_url "https://maps.googleapis.com"
-  @key Application.get_env(:lib_lat_lon, :google_maps_api_key, nil)
+  @key Application.compile_env(:lib_lat_lon, :google_maps_api_key, nil)
 
   @search Enum.join([@server_url, "maps/api/geocode/json"], "/")
   @reverse Enum.join([@server_url, "maps/api/geocode/json"], "/")

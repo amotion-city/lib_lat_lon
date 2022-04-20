@@ -17,6 +17,9 @@ defmodule LibLatLon.Coords do
 
   * http://maps.google.com?search=41°22´48.0˝N,2°11´24.0˝E
   """
+
+  Code.ensure_compiled!(Exexif)
+
   alias LibLatLon.Coords
 
   @typedoc """
@@ -27,15 +30,16 @@ defmodule LibLatLon.Coords do
   and langitude for the destination point (mostly used when dealing with
   `EXIF` information from images.)
   """
-  @type t :: %__MODULE__{
+  @type t :: %{
+          __struct__: __MODULE__,
           lat: number(),
           lon: number(),
           alt: number(),
           direction: number(),
-          magnetic?: true | false
+          magnetic?: boolean()
         }
 
-  @decimal_precision Application.get_env(:lib_lat_lon, :decimal_precision, 9)
+  @decimal_precision Application.compile_env(:lib_lat_lon, :decimal_precision, 9)
 
   @image_start_marker 0xFFD8
   @fields ~w|lat lon alt direction magnetic?|a
@@ -54,10 +58,8 @@ defmodule LibLatLon.Coords do
     `{[degree, minute, second], semisphere}` representation into
     `LibLatLon.Coords`.
   """
-  @spec borrow(dms(), any()) :: number()
+  @spec borrow(dms() | dms_list(), any()) :: number()
   def borrow({d, m, s}, ss), do: borrow(d, m, s, ss)
-
-  @spec borrow(dms_list(), any()) :: number()
   def borrow([d, m, s], ss), do: borrow(d, m, s, ss)
 
   @doc """
@@ -283,7 +285,7 @@ defmodule LibLatLon.Coords do
       coordinate(info)
     else
       false ->
-        case Coords.borrow(file) do
+        case borrow(file) do
           {:error, anything} -> {:error, anything}
           result -> {:ok, result}
         end
@@ -298,7 +300,7 @@ defmodule LibLatLon.Coords do
   def coordinate(%{gps: %Exexif.Data.Gps{} = gps}), do: coordinate(gps)
 
   def coordinate(whatever) do
-    case Coords.borrow(whatever) do
+    case borrow(whatever) do
       %LibLatLon.Coords{} = coords -> {:ok, coords}
       {:error, reason} -> {:error, reason}
       whatever -> {:error, {:malformed, whatever}}

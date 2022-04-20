@@ -6,7 +6,7 @@ defmodule LibLatLon do
   There is a single function exported: [`LibLatLon.lookup/3`].
   """
 
-  @default_provider Application.get_env(
+  @default_provider Application.compile_env(
                       :lib_lat_lon,
                       :provider,
                       LibLatLon.Providers.OpenStreetMap
