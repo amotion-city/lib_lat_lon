@@ -196,12 +196,30 @@ defmodule LibLatLon.Coords do
         gps_longitude_ref: lon_ref,
         gps_img_direction: dir,
         gps_img_direction_ref: dir_ref
-      }) do
+      })
+      when not is_nil(alt) and not is_nil(alt_ref) do
     with %LibLatLon.Coords{} = coords <- borrow({{lat, lat_ref}, {lon, lon_ref}}) do
       %LibLatLon.Coords{
         coords
         | alt: if(alt_ref == 0, do: alt, else: alt * alt_ref),
           direction: dir,
+          magnetic?: dir_ref == "M"
+      }
+    end
+  end
+
+  def borrow(%Exexif.Data.Gps{
+        gps_latitude: lat,
+        gps_latitude_ref: lat_ref,
+        gps_longitude: lon,
+        gps_longitude_ref: lon_ref,
+        gps_img_direction: dir,
+        gps_img_direction_ref: dir_ref
+      }) do
+    with %LibLatLon.Coords{} = coords <- borrow({{lat, lat_ref}, {lon, lon_ref}}) do
+      %LibLatLon.Coords{
+        coords
+        | direction: dir,
           magnetic?: dir_ref == "M"
       }
     end
