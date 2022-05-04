@@ -196,7 +196,8 @@ defmodule LibLatLon.Coords do
         gps_longitude_ref: lon_ref,
         gps_img_direction: dir,
         gps_img_direction_ref: dir_ref
-      }) do
+      })
+      when not is_nil(alt) and not is_nil(alt_ref) do
     with %LibLatLon.Coords{} = coords <- borrow({{lat, lat_ref}, {lon, lon_ref}}) do
       %LibLatLon.Coords{
         coords
