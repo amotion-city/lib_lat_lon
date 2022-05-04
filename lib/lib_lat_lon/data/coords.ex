@@ -208,6 +208,10 @@ defmodule LibLatLon.Coords do
     end
   end
 
+  def borrow(%Exexif.Data.Gps{gps_latitude: lat, gps_longitude: lon}) do
+    %LibLatLon.Coords{lat: borrow(lat), lon: borrow(lon)}
+  end
+
   def borrow({lat, lon}), do: %LibLatLon.Coords{lat: borrow(lat), lon: borrow(lon)}
   def borrow(shit), do: {:error, {:weird_input, shit}}
 
