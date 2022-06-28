@@ -3,7 +3,7 @@ defmodule LibLatLon.MixProject do
 
   @app :lib_lat_lon
   @app_name "LibLatLon"
-  @version "0.6.1"
+  @version "0.7.0"
 
   def project do
     [
