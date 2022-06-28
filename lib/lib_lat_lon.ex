@@ -6,12 +6,6 @@ defmodule LibLatLon do
   There is a single function exported: [`LibLatLon.lookup/3`].
   """
 
-  @default_provider Application.compile_env(
-                      :lib_lat_lon,
-                      :provider,
-                      LibLatLon.Providers.OpenStreetMap
-                    )
-
   @doc """
   Pass anything to lookup using default provider and with default options.
   Pass a provider as the second argument to use a specific provider.
@@ -38,7 +32,7 @@ defmodule LibLatLon do
 
   """
   @spec lookup(any(), atom(), %{}) :: {:ok, LibLatLon.Info.t()} | {:error, any()}
-  def lookup(value, provider \\ @default_provider, opts \\ %{}) do
+  def lookup(value, provider \\ default_provider(), opts \\ %{}) do
     case guess_lookup(provider, value, opts) do
       {:ok, result} -> result
       anything -> anything
@@ -99,5 +93,13 @@ defmodule LibLatLon do
       end)
       |> Enum.into(%{})
     end
+  end
+
+  defp default_provider() do
+    Application.get_env(
+      :lib_lat_lon,
+      :provider,
+      LibLatLon.Providers.OpenStreetMap
+    )
   end
 end
