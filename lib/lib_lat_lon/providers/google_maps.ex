@@ -6,12 +6,11 @@ defmodule LibLatLon.Providers.GoogleMaps do
   @behaviour LibLatLon.Provider
 
   @server_url "https://maps.googleapis.com"
-  @key Application.compile_env(:lib_lat_lon, :google_maps_api_key, nil)
 
   @search Enum.join([@server_url, "maps/api/geocode/json"], "/")
   @reverse Enum.join([@server_url, "maps/api/geocode/json"], "/")
 
-  @defaults %{language: "en", key: @key}
+  @defaults %{language: "en"}
 
   @doc false
   def name, do: "Google Maps"
@@ -50,7 +49,7 @@ defmodule LibLatLon.Providers.GoogleMaps do
   ##############################################################################
 
   defp defaults do
-    Map.put(@defaults, :key, System.get_env("GOOGLE_MAPS_API_KEY") || @key)
+    Map.put(@defaults, :key, System.get_env("GOOGLE_MAPS_API_KEY") || Application.get_env(:lib_lat_lon, :google_maps_api_key, nil))
   end
 
   # %{
