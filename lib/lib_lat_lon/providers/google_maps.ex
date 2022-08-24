@@ -23,11 +23,14 @@ defmodule LibLatLon.Providers.GoogleMaps do
   """
   @spec lookup(LibLatLon.Coords.t() | String.t(), %{}) ::
           {:ok, LibLatLon.Info.t()} | {:error, any()}
-  def lookup(input, opts \\ defaults())
+  def lookup(input, opts \\ %{})
 
   # "https://maps.googleapis.com/maps/api/geocode/json?"
   def lookup(%LibLatLon.Coords{lat: lat, lon: lon}, opts) do
-    query = Map.put(opts, :latlng, "#{lat},#{lon}")
+    query =
+      defaults()
+      |> Map.merge(opts)
+      |> Map.put(:latlng, "#{lat},#{lon}")
 
     [@reverse, URI.encode_query(query)]
     |> Enum.join("?")
@@ -37,7 +40,8 @@ defmodule LibLatLon.Providers.GoogleMaps do
   # "https://maps.googleapis.com/maps/api/geocode/json?"
   def lookup(address, opts) when is_binary(address) do
     query =
-      opts
+      defaults()
+      |> Map.merge(opts)
       |> Map.put(:address, address)
       |> URI.encode_query()
 
