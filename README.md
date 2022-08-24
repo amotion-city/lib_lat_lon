@@ -130,6 +130,7 @@ or, alternatively, use the system environment variable `GOOGLE_MAPS_API_KEY`.
 
 ### Docs / Changelog
 
+* **`0.7.1`** — preserve defaults when options are given [credits @nathan-louie]
 * **`0.7.0`** — use runtime config
 * **`0.6.0`** — the dependency `exexif` is not expected to be specified in the main application `mix.exs` file, use either `{:exexif, "~> 0.0"}` or `{:nextexif, "~> 0.0"}`; if neither is specified, the compilation error is raised
 
