@@ -14,7 +14,11 @@
 ```elixir
 def deps do
   [
-    {:lib_lat_lon, "~> 0.4"}
+    {:lib_lat_lon, "~> 0.7"},
+    # Use PragDave’s exexif
+    {:exexif, "~> 0.0"},
+    # Use AM’s exexif
+    # {:nextexif, "~> 0.0"}
   ]
 end
 ```
