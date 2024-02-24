@@ -23,5 +23,6 @@ erl_crash.dump
 lib_lat_lon-*.tar
 
 /.elixir_ls/
+/.elixir-tools/
 
 /docs/

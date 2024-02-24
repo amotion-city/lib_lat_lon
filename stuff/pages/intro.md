@@ -1,6 +1,11 @@
 # LibLatLon
 
-[![CircleCI](https://circleci.com/gh/amotion-city/lib_lat_lon.svg?style=svg)](https://circleci.com/gh/amotion-city/lib_lat_lon)
+[![HexPM](https://img.shields.io/hexpm/v/lib_lat_lon.svg)](https://hex.pm/packages/lib_lat_lon) 
+[![GHA](https://github.com/amotion-city/lib_lat_lon/workflows/Test/badge.svg)](https://github.com/amotion-city/lib_lat_lon/actions) 
+[![Inline docs](http://inch-ci.org/github/amotion-city/lib_lat_lon.svg)](http://inch-ci.org/github/amotion-city/lib_lat_lon) 
+[![License badge](https://img.shields.io/hexpm/l/lib_lat_lon.svg)](https://github.com/amotion-city/lib_lat_lon/blob/master/LICENSE.md) 
+[![Read the Docs](/stuff/images/docs-passing.png?raw=true)](https://hexdocs.pm/lib_lat_lon) 
+[![Code coverage badge](https://img.shields.io/codecov/c/github/amotion-city/lib_lat_lon/master.svg)](https://codecov.io/gh/amotion-city/lib_lat_lon)
 
 **{:ok, 📍}** handy library for managing geo coordinates that
 includes _direct/reverse geocoding_ features.
@@ -10,7 +15,11 @@ includes _direct/reverse geocoding_ features.
 ```elixir
 def deps do
   [
-    {:lib_lat_lon, "~> 0.1"}
+    {:lib_lat_lon, "~> 0.1"},
+    # Use PragDave’s exexif
+    {:exexif, "~> 0.0"},
+    # Use AM’s exexif
+    # {:nextexif, "~> 0.0"}
   ]
 end
 ```
