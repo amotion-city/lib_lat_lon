@@ -3,7 +3,8 @@ defmodule LibLatLon.MixProject do
 
   @app :lib_lat_lon
   @app_name "LibLatLon"
-  @version "0.7.1"
+  @version "0.8.0"
+  @exexif Application.compile_env(:lib_lat_lon, :exexif, :exexif)
 
   def project do
     [
@@ -26,6 +27,13 @@ defmodule LibLatLon.MixProject do
         "coveralls.detail": :ci,
         "coveralls.post": :ci,
         "coveralls.html": :ci
+      ],
+      dialyzer: [
+        plt_file: {:no_warn, ".dialyzer/dialyzer.plt"},
+        plt_add_deps: :app_tree,
+        plt_add_apps: [],
+        list_unused_filters: true,
+        ignore_warnings: ".dialyzer/ignore.exs"
       ]
     ]
   end
@@ -44,7 +52,7 @@ defmodule LibLatLon.MixProject do
       {:httpoison, "~> 1.5"},
       {:jason, "~> 1.0"},
       {:porcelain, "~> 2.0"},
-      {:exexif, "~> 0.0", only: [:ci]},
+      {@exexif, "~> 0.0"},
       {:credo, "~> 1.0", only: [:dev, :ci]},
       {:inch_ex, ">= 0.0.0", only: [:dev, :docs]},
       {:ex_doc, ">= 0.0.0", only: [:ci, :docs]},

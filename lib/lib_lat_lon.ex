@@ -95,7 +95,7 @@ defmodule LibLatLon do
     end
   end
 
-  defp default_provider() do
+  defp default_provider do
     Application.get_env(
       :lib_lat_lon,
       :provider,

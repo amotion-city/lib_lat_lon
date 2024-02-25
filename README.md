@@ -12,13 +12,20 @@
 ## Installation
 
 ```elixir
+# config/config.exs
+
+# Use PragDave’s exexif (default)
+config :lib_lat_lon, :exexif, :exexif
+
+# Use AM’s exexif
+config :lib_lat_lon, :exexif, :nextexif
+```
+
+```elixir
+# mix.exs
 def deps do
   [
-    {:lib_lat_lon, "~> 0.7"},
-    # Use PragDave’s exexif
-    {:exexif, "~> 0.0"},
-    # Use AM’s exexif
-    # {:nextexif, "~> 0.0"}
+    {:lib_lat_lon, "~> 0.8"}
   ]
 end
 ```
@@ -134,6 +141,7 @@ or, alternatively, use the system environment variable `GOOGLE_MAPS_API_KEY`.
 
 ### Docs / Changelog
 
+* **`0.8.0`** — aggressive choice of `:exexif`/`:nextexif` through config (since `Code.ensure_compiled!/1` works weird)
 * **`0.7.1`** — preserve defaults when options are given [credits @nathan-louie]
 * **`0.7.0`** — use runtime config
 * **`0.6.0`** — the dependency `exexif` is not expected to be specified in the main application `mix.exs` file, use either `{:exexif, "~> 0.0"}` or `{:nextexif, "~> 0.0"}`; if neither is specified, the compilation error is raised

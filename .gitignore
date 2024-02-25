@@ -24,5 +24,6 @@ lib_lat_lon-*.tar
 
 /.elixir_ls/
 /.elixir-tools/
+/.dialyzer/*plt*
 
 /docs/

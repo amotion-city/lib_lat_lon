@@ -13,13 +13,20 @@ includes _direct/reverse geocoding_ features.
 ## Installation
 
 ```elixir
+# config/config.exs
+
+# Use PragDave’s exexif (default)
+config :lib_lat_lon, :exexif, :exexif
+
+# Use AM’s exexif
+config :lib_lat_lon, :exexif, :nextexif
+```
+
+```elixir
+# mix.exs
 def deps do
   [
-    {:lib_lat_lon, "~> 0.1"},
-    # Use PragDave’s exexif
-    {:exexif, "~> 0.0"},
-    # Use AM’s exexif
-    # {:nextexif, "~> 0.0"}
+    {:lib_lat_lon, "~> 0.7"}
   ]
 end
 ```

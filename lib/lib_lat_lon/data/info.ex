@@ -99,11 +99,12 @@ defmodule LibLatLon.Info do
   @doc """
   The same as `LibLatLon.Info.from_map/1`, but banged.
   """
-  @spec from_map!(map() | list()) :: LibLatLon.Info.t() | no_return()
+  @spec from_map!(map() | list()) :: LibLatLon.Info.t() | [LibLatLon.Info.t()]
   def from_map!(%{} = input), do: with({:ok, result} <- from_map(input), do: result)
   def from_map!([]), do: raise(LibLatLon.Issue, reason: :no_data)
   def from_map!([%{} = input]), do: from_map!(input)
-  def from_map!([%{} = h | t]), do: [from_map!(h) | from_map!(t)]
+  def from_map!([%{} = h | [_ | _] = t]), do: [from_map!(h) | from_map!(t)]
+  def from_map!([%{} = h | %{} = t]), do: [from_map!(h), from_map!(t)]
 
   @doc """
   Formats the `String.t` representation of this struct according to

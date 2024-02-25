@@ -18,14 +18,7 @@ defmodule LibLatLon.Coords do
   * http://maps.google.com?search=41°22´48.0˝N,2°11´24.0˝E
   """
 
-  case Code.ensure_compiled(Exexif) do
-    {:module, Exexif} ->
-      :ok
-
-    {:error, reason} ->
-      raise ArgumentError,
-            "could not load module #{inspect(Exexif)} due to reason #{inspect(reason)}"
-  end
+  Code.ensure_compiled!(Exexif)
 
   alias LibLatLon.Coords
 
@@ -340,7 +333,7 @@ defmodule LibLatLon.Coords do
       iex> LibLatLon.Coords.coordinate!("test/inputs/1.jpg")
       #Coord<[lat: 41.37600333333334, lon: 2.1486783333333332, fancy: "41°22´33.612˝N,2°8´55.242˝E"]>
   """
-  @spec coordinate!(nil | binary() | %{} | any()) :: LibLatLon.Coords.t() | no_return()
+  @spec coordinate!(nil | binary() | %{} | any()) :: LibLatLon.Coords.t()
   def coordinate!(whatever) do
     case coordinate(whatever) do
       {:ok, result} -> result

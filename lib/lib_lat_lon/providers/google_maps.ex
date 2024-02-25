@@ -53,7 +53,12 @@ defmodule LibLatLon.Providers.GoogleMaps do
   ##############################################################################
 
   defp defaults do
-    Map.put(@defaults, :key, System.get_env("GOOGLE_MAPS_API_KEY") || Application.get_env(:lib_lat_lon, :google_maps_api_key, nil))
+    Map.put(
+      @defaults,
+      :key,
+      System.get_env("GOOGLE_MAPS_API_KEY") ||
+        Application.get_env(:lib_lat_lon, :google_maps_api_key, nil)
+    )
   end
 
   # %{
